@@ -3,7 +3,8 @@ import { defineConfig } from 'vitepress'
 const englishNav = [
   { text: 'API', link: '/api/' },
   { text: 'Tutorials', link: '/tutorials/' },
-  { text: 'Skills', link: '/skills/' }
+  { text: 'Skills', link: '/skills/' },
+  { text: 'FAQ', link: '/faq/' }
 ]
 
 const englishApiSidebar = [
@@ -75,7 +76,8 @@ export default defineConfig({
         sidebar: {
           '/api/': englishApiSidebar,
           '/tutorials/': [{ text: 'Tutorials', items: [{ text: 'All tutorials', link: '/tutorials/' }] }],
-          '/skills/': [{ text: 'Skills', items: [{ text: 'Recommended skills', link: '/skills/' }] }]
+          '/skills/': [{ text: 'Skills', items: [{ text: 'Recommended skills', link: '/skills/' }] }],
+          '/faq/': [{ text: 'FAQ', items: [{ text: 'Frequently asked questions', link: '/faq/' }] }]
         }
       }
     },
@@ -87,9 +89,13 @@ export default defineConfig({
         nav: [
           { text: 'API 文档', link: '/zh-cn/api/' },
           { text: '教程', link: '/zh-cn/tutorials/' },
-          { text: 'Skills', link: '/zh-cn/skills/' }
+          { text: 'Skills', link: '/zh-cn/skills/' },
+          { text: '常见问题', link: '/zh-cn/faq/' }
         ],
-        sidebar: { '/zh-cn/api/': chineseApiSidebar }
+        sidebar: {
+          '/zh-cn/api/': chineseApiSidebar,
+          '/zh-cn/faq/': [{ text: '常见问题', items: [{ text: '常见问题', link: '/zh-cn/faq/' }] }]
+        }
       }
     },
     'zh-tw': { label: '繁體中文', lang: 'zh-TW', link: '/zh-tw/' },
