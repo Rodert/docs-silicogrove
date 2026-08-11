@@ -2,6 +2,7 @@
   "name": "silicogrove-docs",
   "private": true,
   "type": "module",
+  "packageManager": "pnpm@10.16.1",
   "scripts": {
     "dev": "vitepress dev docs",
     "build": "vitepress build docs",
