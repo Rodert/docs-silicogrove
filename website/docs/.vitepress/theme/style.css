@@ -1,0 +1,20 @@
+:root {
+  --vp-c-brand-1: #087f5b;
+  --vp-c-brand-2: #0ca678;
+  --vp-c-brand-3: #12b886;
+}
+
+.api-page {
+  --vp-c-brand-1: #1864ab;
+  --vp-c-brand-2: #1971c2;
+}
+
+.tutorials-page {
+  --vp-c-brand-1: #c2255c;
+  --vp-c-brand-2: #d6336c;
+}
+
+.skills-page {
+  --vp-c-brand-1: #7048e8;
+  --vp-c-brand-2: #7950f2;
+}
