@@ -10,26 +10,26 @@ const englishApiSidebar = [
   {
     text: 'Get started',
     items: [
-      { text: 'Overview', link: '/api/' },
-      { text: 'Quick start', link: '/api/quickstart' },
-      { text: 'Models and access', link: '/api/models' }
+      { text: 'Overview', link: '/api/#overview' },
+      { text: 'Quick start', link: '/api/#quickstart' },
+      { text: 'Models and access', link: '/api/#models' }
     ]
   },
   {
     text: 'API capabilities',
     items: [
-      { text: 'Text', link: '/api/text' },
-      { text: 'Images', link: '/api/images' },
-      { text: 'Video', link: '/api/videos' },
-      { text: 'Reference assets', link: '/api/assets' },
-      { text: 'Audio', link: '/api/audio' }
+      { text: 'Text', link: '/api/#text' },
+      { text: 'Images', link: '/api/#images' },
+      { text: 'Video', link: '/api/#videos' },
+      { text: 'Reference assets', link: '/api/#assets' },
+      { text: 'Audio', link: '/api/#audio' }
     ]
   },
   {
     text: 'Reference',
     items: [
-      { text: 'Troubleshooting', link: '/api/troubleshooting' },
-      { text: 'Relay integrations', link: '/api/relay' }
+      { text: 'Troubleshooting', link: '/api/#troubleshooting' },
+      { text: 'Relay integrations', link: '/api/#relay' }
     ]
   }
 ]
@@ -38,26 +38,26 @@ const chineseApiSidebar = [
   {
     text: '开始使用',
     items: [
-      { text: '概览', link: '/zh-cn/api/' },
-      { text: '快速接入', link: '/zh-cn/api/quickstart' },
-      { text: '模型与权限', link: '/zh-cn/api/models' }
+      { text: '概览', link: '/zh-cn/api/#overview' },
+      { text: '快速接入', link: '/zh-cn/api/#quickstart' },
+      { text: '模型与权限', link: '/zh-cn/api/#models' }
     ]
   },
   {
     text: '能力接口',
     items: [
-      { text: '文本聊天', link: '/zh-cn/api/text' },
-      { text: '图片生成与编辑', link: '/zh-cn/api/images' },
-      { text: '视频生成', link: '/zh-cn/api/videos' },
-      { text: '上传参考素材', link: '/zh-cn/api/assets' },
-      { text: '音频', link: '/zh-cn/api/audio' }
+      { text: '文本聊天', link: '/zh-cn/api/#text' },
+      { text: '图片生成与编辑', link: '/zh-cn/api/#images' },
+      { text: '视频生成', link: '/zh-cn/api/#videos' },
+      { text: '上传参考素材', link: '/zh-cn/api/#assets' },
+      { text: '音频', link: '/zh-cn/api/#audio' }
     ]
   },
   {
     text: '参考',
     items: [
-      { text: '常见错误', link: '/zh-cn/api/troubleshooting' },
-      { text: '二次中转', link: '/zh-cn/api/relay' }
+      { text: '常见错误', link: '/zh-cn/api/#troubleshooting' },
+      { text: '二次中转', link: '/zh-cn/api/#relay' }
     ]
   }
 ]
@@ -99,7 +99,7 @@ export default defineConfig({
     es: { label: 'Español', lang: 'es-ES', link: '/es/' }
   },
   themeConfig: {
-    logo: '/logo.svg',
+    logo: '/silicogrove-logo.png',
     socialLinks: [{ icon: 'github', link: 'https://github.com/' }]
   }
 })

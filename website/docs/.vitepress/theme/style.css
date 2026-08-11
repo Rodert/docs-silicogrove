@@ -27,3 +27,40 @@
   color: var(--vp-c-text-1);
   padding: 0 8px;
 }
+
+.site-footer {
+  border-top: 1px solid var(--vp-c-divider);
+  background: var(--vp-c-bg);
+}
+
+.site-footer__content {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  max-width: 1152px;
+  margin: 0 auto;
+  padding: 24px;
+  color: var(--vp-c-text-2);
+  font-size: 14px;
+}
+
+.site-footer nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+}
+
+.site-footer a {
+  color: var(--vp-c-text-2);
+}
+
+.site-footer a:hover {
+  color: var(--vp-c-brand-1);
+}
+
+@media (max-width: 640px) {
+  .site-footer__content {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
