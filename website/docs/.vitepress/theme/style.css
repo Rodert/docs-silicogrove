@@ -18,3 +18,12 @@
   --vp-c-brand-1: #7048e8;
   --vp-c-brand-2: #7950f2;
 }
+
+.language-switcher select {
+  min-height: 32px;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 4px;
+  background: var(--vp-c-bg);
+  color: var(--vp-c-text-1);
+  padding: 0 8px;
+}

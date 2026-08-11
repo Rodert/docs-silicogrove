@@ -2,15 +2,15 @@
 class: api-page
 ---
 
-# 常见错误
+# Troubleshooting
 
-| 现象 | 常见原因 | 处理方式 |
+| Symptom | Likely cause | Resolution |
 | --- | --- | --- |
-| 模型不可用 | 模型和分组不匹配，或 Key 没有权限。 | 用同一个 Key 请求 `/v1/models` 确认模型名。 |
-| `model is required` | 字段名被二次中转改写。 | 保留 `model`，不要改成 `model_name`。 |
-| 视频失败或走聊天模型 | 视频请求发到了聊天接口。 | 视频必须调用 `POST /v1/videos`。 |
-| 参考素材未生效 | 传了本地路径，或字段不是数组。 | 传公网 URL，分别填入 `images`、`videos`、`audios`。 |
-| `seconds` 类型错误 | 把时长传成数字。 | 使用字符串，例如 `"seconds": "15"`。 |
-| 上传失败 | 手写了错误的 Content-Type，或字段名错误。 | 使用 `-F`；文件字段名为 `file`。 |
+| Model unavailable | The model and group do not match, or the key lacks permission. | Call `/v1/models` with the same key to confirm the model name. |
+| `model is required` | A relay renamed the field. | Preserve `model`; do not change it to `model_name`. |
+| Video fails or enters a chat model | The request was sent to a chat endpoint. | Call `POST /v1/videos`. |
+| Reference asset has no effect | A local path was sent, or the value was not an array. | Send public URLs in `images`, `videos`, or `audios`. |
+| Invalid `seconds` type | The duration was sent as a number. | Use a string, such as `"seconds": "15"`. |
+| Upload fails | Wrong content type or file field name. | Use `-F` and name the file field `file`. |
 
-排查问题时，请提供请求时间、模型名、接口路径、分组、request ID 和错误内容。请勿公开完整 API Key、`Authorization` 请求头或敏感提示词。
+When reporting an issue, include request time, model, endpoint, group, request ID, and the error response. Do not share API keys, authorization headers, or sensitive prompts.

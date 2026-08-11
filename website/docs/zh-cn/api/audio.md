@@ -2,19 +2,24 @@
 class: api-page
 ---
 
-# Audio
+# 音频
 
-## Speech synthesis
+## 语音合成
 
 ```bash
 curl -X POST "https://ai.silicogrove.com/v1/audio/speech" \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
-  -d '{"model":"YOUR_TTS_MODEL","input":"Welcome to Silico Grove API.","voice":"alloy","response_format":"mp3"}' \
+  -d '{
+    "model": "YOUR_TTS_MODEL",
+    "input": "欢迎使用 Silico Grove API。",
+    "voice": "alloy",
+    "response_format": "mp3"
+  }' \
   --output speech.mp3
 ```
 
-## Transcription and translation
+## 音频转写与翻译
 
 ```bash
 curl -X POST "https://ai.silicogrove.com/v1/audio/transcriptions" \
@@ -30,4 +35,4 @@ curl -X POST "https://ai.silicogrove.com/v1/audio/translations" \
   -F "response_format=json"
 ```
 
-Transcription and translation are multipart requests. The file field is `file`.
+转写和翻译必须使用 multipart，文件字段名为 `file`。

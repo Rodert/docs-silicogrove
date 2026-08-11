@@ -2,7 +2,7 @@
 class: api-page
 ---
 
-# Text
+# 文本聊天
 
 ## Chat Completions
 
@@ -10,7 +10,14 @@ class: api-page
 curl -X POST "https://ai.silicogrove.com/v1/chat/completions" \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
-  -d '{"model":"gpt-5.4-mini","messages":[{"role":"system","content":"You are a concise assistant."},{"role":"user","content":"Write a product introduction."}],"stream":false}'
+  -d '{
+    "model": "gpt-5.4-mini",
+    "messages": [
+      {"role": "system", "content": "你是一个简洁的助手"},
+      {"role": "user", "content": "写一句产品介绍"}
+    ],
+    "stream": false
+  }'
 ```
 
 ## Responses API
@@ -19,5 +26,5 @@ curl -X POST "https://ai.silicogrove.com/v1/chat/completions" \
 curl -X POST "https://ai.silicogrove.com/v1/responses" \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
-  -d '{"model":"gpt-5.4-mini","input":"Introduce yourself in one sentence."}'
+  -d '{"model": "gpt-5.4-mini", "input": "用一句话介绍你自己"}'
 ```

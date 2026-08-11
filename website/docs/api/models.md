@@ -2,18 +2,13 @@
 class: api-page
 ---
 
-# 模型与权限
+# Models and Access
 
-可调用模型由账号、分组和 API Key 权限共同决定。始终以自己的 `/v1/models` 返回结果为准。
+Available models depend on your account, group, and API key permissions. Treat `GET /v1/models` as the source of truth.
 
-| 场景 | 常见模型示例 | 接口 |
+| Capability | Typical models | Endpoint |
 | --- | --- | --- |
-| 文本 | `gpt-5.4-mini`、Claude、Gemini 等 | `/v1/chat/completions` |
-| 图片 | `gpt-image-2`、Gemini 图片模型 | `/v1/images/generations` |
-| 视频 | `video-ds-2.0`、`as-sd2.0-fast` | `/v1/videos` |
-| 音频 | 以模型列表返回为准 | `/v1/audio/*` |
-
-```bash
-curl -X GET "https://ai.silicogrove.com/v1/models" \
-  -H "Authorization: Bearer YOUR_API_KEY"
-```
+| Text | `gpt-5.4-mini`, Claude, Gemini | `/v1/chat/completions` |
+| Images | `gpt-image-2`, Gemini image models | `/v1/images/generations` |
+| Video | `video-ds-2.0`, `as-sd2.0-fast` | `/v1/videos` |
+| Audio | Check the returned model list | `/v1/audio/*` |
