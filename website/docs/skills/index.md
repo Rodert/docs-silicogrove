@@ -4,4 +4,8 @@ class: skills-page
 
 # Recommended Skills
 
-Use this section to publish curated skills, installation steps, prerequisites, and example workflows.
+## SilicoGrove Video
+
+Generate text-to-video and reference-guided videos through the SilicoGrove API.
+
+[Open the skill guide](/skills/silicogrove-video) or view its [source repository](https://github.com/Rodert/silicogrove-video-skill).

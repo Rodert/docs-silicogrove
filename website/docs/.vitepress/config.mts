@@ -108,7 +108,13 @@ export default defineConfig({
         sidebar: {
           '/api/': englishApiSidebar,
           '/tutorials/': [{ text: 'Tutorials', items: [{ text: 'All tutorials', link: '/tutorials/' }] }],
-          '/skills/': [{ text: 'Skills', items: [{ text: 'Recommended skills', link: '/skills/' }] }],
+          '/skills/': [{
+            text: 'Skills',
+            items: [
+              { text: 'Recommended skills', link: '/skills/' },
+              { text: 'SilicoGrove Video', link: '/skills/silicogrove-video' }
+            ]
+          }],
           '/faq/': [{ text: 'FAQ', items: [{ text: 'Frequently asked questions', link: '/faq/' }] }]
         }
       }
@@ -126,7 +132,14 @@ export default defineConfig({
         ],
         sidebar: {
           '/zh-cn/api/': chineseApiSidebar,
-          '/zh-cn/faq/': [{ text: '常见问题', items: [{ text: '常见问题', link: '/zh-cn/faq/' }] }]
+          '/zh-cn/faq/': [{ text: '常见问题', items: [{ text: '常见问题', link: '/zh-cn/faq/' }] }],
+          '/zh-cn/skills/': [{
+            text: 'Skills',
+            items: [
+              { text: '推荐 Skills', link: '/zh-cn/skills/' },
+              { text: 'SilicoGrove Video', link: '/zh-cn/skills/silicogrove-video' }
+            ]
+          }]
         }
       }
     },
