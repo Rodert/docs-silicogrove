@@ -1,5 +1,15 @@
 import { defineConfig } from 'vitepress'
 
+const siteUrl = 'https://docs.silicogrove.com'
+const apiSourcePages = /^(api|zh-cn\/api)\/(quickstart|models|text|images|videos|assets|audio|troubleshooting|relay)\.md$/
+
+function pageUrl(relativePath: string) {
+  const path = relativePath
+    .replace(/index\.md$/, '')
+    .replace(/\.md$/, '')
+  return `${siteUrl}/${path}`
+}
+
 const englishNav = [
   { text: 'API', link: '/api/' },
   { text: 'Tutorials', link: '/tutorials/' },
@@ -66,7 +76,29 @@ const chineseApiSidebar = [
 export default defineConfig({
   title: 'SilicoGrove Docs',
   description: 'API documentation, tutorials, and skills for SilicoGrove.',
+  titleTemplate: ':title | SilicoGrove Docs',
   cleanUrls: true,
+  head: [
+    ['link', { rel: 'icon', type: 'image/png', href: '/favicon.png' }],
+    ['meta', { name: 'theme-color', content: '#087f5b' }],
+    ['meta', { property: 'og:site_name', content: 'SilicoGrove Docs' }],
+    ['meta', { property: 'og:type', content: 'website' }],
+    ['meta', { property: 'og:image', content: `${siteUrl}/silicogrove-logo.png` }],
+    ['meta', { name: 'twitter:card', content: 'summary' }]
+  ],
+  transformHead: ({ pageData }) => {
+    const url = pageUrl(pageData.relativePath)
+    const tags: [string, Record<string, string>][] = [
+      ['link', { rel: 'canonical', href: url }],
+      ['meta', { property: 'og:url', content: url }]
+    ]
+
+    if (apiSourcePages.test(pageData.relativePath)) {
+      tags.push(['meta', { name: 'robots', content: 'noindex, follow' }])
+    }
+
+    return tags
+  },
   locales: {
     root: {
       label: 'English',
