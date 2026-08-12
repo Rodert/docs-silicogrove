@@ -112,7 +112,8 @@ export default defineConfig({
             text: 'Skills',
             items: [
               { text: 'Recommended skills', link: '/skills/' },
-              { text: 'SilicoGrove Video', link: '/skills/silicogrove-video' }
+              { text: 'SilicoGrove Video', link: '/skills/silicogrove-video' },
+              { text: 'SilicoGrove Image', link: '/skills/silicogrove-image' }
             ]
           }],
           '/faq/': [{ text: 'FAQ', items: [{ text: 'Frequently asked questions', link: '/faq/' }] }]
@@ -137,7 +138,8 @@ export default defineConfig({
             text: 'Skills',
             items: [
               { text: '推荐 Skills', link: '/zh-cn/skills/' },
-              { text: 'SilicoGrove Video', link: '/zh-cn/skills/silicogrove-video' }
+              { text: 'SilicoGrove Video', link: '/zh-cn/skills/silicogrove-video' },
+              { text: 'SilicoGrove Image', link: '/zh-cn/skills/silicogrove-image' }
             ]
           }]
         }
