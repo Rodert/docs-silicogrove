@@ -6,8 +6,8 @@ class: api-page
 
 Upload local images, videos, and audio to the temporary asset endpoint. The returned `data.url` can be placed in a video request's `images`, `videos`, or `audios` array.
 
-::: warning
-Temporary assets are deleted after 24 hours. Use your own object storage or CDN URLs for persistent files.
+::: warning Temporary files are periodically removed
+Uploaded assets and generated results are temporary. Their URLs may expire during periodic cleanup. Download and store required files promptly; do not treat returned URLs as permanent storage.
 :::
 
 ```bash

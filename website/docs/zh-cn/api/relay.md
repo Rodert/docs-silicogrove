@@ -10,3 +10,4 @@ class: api-page
 - 视频模型 endpoint 必须为 `/v1/videos`，不要放入聊天模型池。
 - 转发视频请求时保留 JSON 原字段，尤其是 `images`、`videos`、`audios` 数组。
 - 图片编辑与音频转写是 multipart 请求，转发时不要丢失文件字段。
+- 异步图片统一提交到 `POST /v1/images/tasks`，并轮询 `GET /v1/images/tasks/{task_id}`；不要将异步任务包装成同步图片响应。
