@@ -4,47 +4,99 @@ class: api-page
 
 # Video
 
-Video models must use `POST /v1/videos`, not `/v1/chat/completions`. Submissions return a task ID that must be polled.
+Video generation is asynchronous. Submit to `POST /v1/videos`, retain the returned task ID, then poll `GET /v1/videos/{task_id}` until the task reaches a terminal state. Video models must not be sent to `/v1/chat/completions`.
 
-## Minimal text-to-video request
+Available models depend on the API key and group. Call `GET /v1/models` before presenting model choices to end users.
+
+## Supported Grok video models
+
+| Model | Text to video | Reference images | Maximum duration | Resolution |
+| --- | --- | --- | --- | --- |
+| `grok-image-video` | Yes | 1 image: up to 15s; 2-7 images: up to 10s | 15s | `480p`, `720p` |
+| `grok-video-1.5` | Yes | 0-7 images | 15s | `480p`, `720p` |
+| `grok-video-1.5-1080p` | No | Exactly 1 image | 15s | `1080p` |
+
+For `grok-image-video`, multi-reference requests above 10 seconds are processed as 10-second requests. Always use the actual task result as the final source of truth.
+
+## Create a task
 
 ```bash
 curl -X POST "https://ai.silicogrove.com/v1/videos" \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
-  -d '{"model":"video-ds-2.0-fast","prompt":"A cinematic 9:16 short video, neon city rooftop at night, realistic lighting, no watermark.","seconds":"15","aspect_ratio":"9:16"}'
+  -d '{
+    "model": "grok-video-1.5",
+    "prompt": "A cinematic sunrise over a futuristic coastal city, slow aerial camera movement",
+    "seconds": "15",
+    "aspect_ratio": "16:9",
+    "resolution": "720p"
+  }'
 ```
 
-## Reference media
+The response includes a public `id` or `task_id`. Store that value; do not use an upstream task ID obtained from another API response.
 
-Reference media must use public URLs. Upload local files through [Reference assets](/api/assets); do not place local paths in JSON.
+```json
+{
+  "id": "task_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+  "object": "video",
+  "status": "queued"
+}
+```
+
+## Create a reference-image task
+
+Use public HTTPS URLs or complete `data:` URLs such as `data:image/png;base64,...`. Do not send a local file path or bare base64 bytes. Local files can be uploaded through [Reference assets](/api/assets) first.
+
+`image_urls` is the preferred field. `images` is accepted for compatibility. Send only one of them. `reference_images` and `input_reference: {"image_url":"..."}` are also accepted for integrations that use those names; do not combine `reference_images` and `input_reference` in one request.
 
 ```bash
 curl -X POST "https://ai.silicogrove.com/v1/videos" \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
-  -d '{"model":"video-ds-2.0","prompt":"Use the image appearance and video motion to create a natural 9:16 video.","seconds":"15","aspect_ratio":"9:16","images":["https://example.com/ref-1.jpg"],"videos":["https://example.com/motion.mp4"],"audios":["https://example.com/music.mp3"]}'
+  -d '{
+    "model": "grok-video-1.5",
+    "prompt": "Create a premium product showcase with soft studio lighting and a slow rotating camera",
+    "seconds": "10",
+    "aspect_ratio": "9:16",
+    "resolution": "720p",
+    "image_urls": [
+      "https://example.com/product-front.png",
+      "https://example.com/product-side.png"
+    ]
+  }'
 ```
 
-| Field | Limit | Description |
+## Request fields
+
+| Field | Required | Description |
 | --- | --- | --- |
-| `model` | Required | A video model visible to the API key. |
-| `prompt` | Required | Describe the subject, motion, camera, style, and ratio. |
-| `seconds` | Recommended | String: `"5"`, `"10"`, or `"15"`. |
-| `aspect_ratio` | Recommended | `16:9`, `9:16`, or `1:1`. |
-| `images` | Up to 4 | Array of jpg, png, or webp URLs. |
-| `videos` | Up to 3 | Array of mp4, mov, or webm URLs. |
-| `audios` | Up to 1 | Array of mp3, m4a, wav, aac, or ogg URLs. |
+| `model` | Yes | A video model available to the API key. |
+| `prompt` | Yes | Describe the subject, motion, camera, visual style, and composition. |
+| `seconds` | No | Requested duration as a string, for example `"4"`, `"6"`, `"10"`, or `"15"`. Model-specific limits apply. |
+| `aspect_ratio` | No | `16:9`, `9:16`, or `1:1`. |
+| `resolution` | No | `480p`, `720p`, or `1080p`, subject to the selected model. |
+| `image_urls` | No | Preferred array of up to 7 reference image URLs or complete data URLs. |
+| `images` | No | Compatibility alias for `image_urls`; do not send both. |
+| `reference_images` | No | Compatibility array of reference images; do not combine with `input_reference`. |
+| `input_reference` | No | Compatibility single-image form: `{ "image_url": "https://..." }`. |
 
-These limits apply to `video-ds-2.0`, `video-ds-2.0-fast`, and `as-sd2.0-fast`. Other video models may differ.
+The older `video-ds-*` models support `images`, `videos`, and `audios`. Their media limits are 4 images, 3 videos, and 1 audio file. Do not send video or audio references to the Grok models.
 
-## Retrieve a task and download its result
+## Poll a task
 
 ```bash
 curl -X GET "https://ai.silicogrove.com/v1/videos/TASK_ID" \
   -H "Authorization: Bearer YOUR_API_KEY"
+```
 
-curl -L -X GET "https://ai.silicogrove.com/v1/videos/TASK_ID/content" \
+Treat `queued` and `in_progress` as non-terminal. `completed` means the video is available; `failed` means generation ended unsuccessfully. Poll no more frequently than once every 5 seconds, and retain the task ID if a client-side timeout is reached.
+
+## Download the completed video
+
+```bash
+curl -L "https://ai.silicogrove.com/v1/videos/TASK_ID/content" \
   -H "Authorization: Bearer YOUR_API_KEY" \
   --output result.mp4
 ```
+
+The service may return a signed result URL internally. It is temporary and should be downloaded promptly. Use the content endpoint above rather than reconstructing an upstream URL, task ID, domain, or signature.
