@@ -85,7 +85,7 @@ The gateway accepts the common fields below. Individual models may support only 
 | --- | --- | --- | --- | --- |
 | `model` | string | Yes | From `GET /v1/models` | Image model name. |
 | `prompt` | string | Yes | Natural-language text | Generation or editing instruction. |
-| `n` | integer | No | `1` to `128`; default `1` | Number of images. Gemini image models require `1`; other models may impose lower limits. |
+| `n` | integer | No | `1` to `10`; default `1` | Number of images. Gemini image models require `1`; other models may impose lower limits. |
 | `size` | string | No | Common: `1024x1024`, `1536x1024`, `1024x1536`, `1792x1024`, `1024x1792` | Size or aspect-ratio mapping is model-dependent. DALL-E models enforce narrower enums. |
 | `quality` | string | No | Common: `auto`, `low`, `medium`, `high`, `standard`, `hd`, `1k`, `2k`, `4k` | Quality or output-resolution tier. Upstream case sensitivity may differ. |
 | `response_format` | string | No | `url`, `b64_json` | Desired synchronous response. Async tasks always return a persisted URL. |

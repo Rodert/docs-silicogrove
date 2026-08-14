@@ -85,7 +85,7 @@ curl "https://ai.silicogrove.com/v1/images/edits" \
 | --- | --- | --- | --- | --- |
 | `model` | string | 是 | 以 `GET /v1/models` 为准 | 图片模型名称。 |
 | `prompt` | string | 是 | 自然语言文本 | 生成或编辑要求。 |
-| `n` | integer | 否 | `1` 至 `128`；默认 `1` | 生成数量。Gemini 图片模型应设置为 `1`，其他模型也可能有更小限制。 |
+| `n` | integer | 否 | `1` 至 `10`；默认 `1` | 生成数量。Gemini 图片模型应设置为 `1`，其他模型也可能有更小限制。 |
 | `size` | string | 否 | 常见 `1024x1024`、`1536x1024`、`1024x1536`、`1792x1024`、`1024x1792` | 尺寸或比例映射取决于模型。DALL-E 模型有更严格的尺寸枚举。 |
 | `quality` | string | 否 | 常见 `auto`、`low`、`medium`、`high`、`standard`、`hd`、`1k`、`2k`、`4k` | 质量或输出分辨率档位，区分大小写的行为取决于上游。 |
 | `response_format` | string | 否 | `url`、`b64_json` | 同步接口的期望返回格式。异步任务最终只返回持久化后的 URL。 |
