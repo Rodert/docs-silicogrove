@@ -133,6 +133,7 @@ export default defineConfig({
         ],
         sidebar: {
           '/zh-cn/api/': chineseApiSidebar,
+          '/zh-cn/tutorials/': [{ text: '教程', items: [{ text: '全部教程', link: '/zh-cn/tutorials/' }] }],
           '/zh-cn/faq/': [{ text: '常见问题', items: [{ text: '常见问题', link: '/zh-cn/faq/' }] }],
           '/zh-cn/skills/': [{
             text: 'Skills',
