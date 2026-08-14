@@ -139,6 +139,8 @@ R2 未配置或上传失败时返回 `b64_json`：
 
 异步接口必须启用本站 R2 存储，不支持 `stream: true`。异步改图上传的参考图单文件最大 `10 MB`。异步生成结果必须成功保存到 R2 才会标记为 `completed`；上游调用或持久化失败时任务标记为 `failed`，预扣额度会退还。
 
+JSON 改图使用 `image`（单张）或 `images`（多张），每项为公网 HTTPS URL 或完整 `data:image/...;base64,...`。Gemini 图片模型会将这些引用转换为原生 `inlineData`；`mask` 不适用于 Gemini 改图。需要上传本地文件时，可先调用[临时素材接口](/zh-cn/api/assets)，该接口支持 API Key。
+
 ### 异步生图
 
 ```bash
