@@ -19,6 +19,16 @@ For `grok-video-1.5`, `seconds` must be one of `"4"`, `"6"`, `"8"`, `"10"`, `"12
 
 For `grok-image-video`, multi-reference requests above 10 seconds are processed as 10-second requests. Always use the actual task result as the final source of truth.
 
+## Supported Kling V3 models
+
+| Model | Duration | Resolution | Billing |
+| --- | --- | --- | --- |
+| `kling-video-v3` | 3-15 seconds | `720p`, `1080p`, `4k` | Per second and selected resolution |
+| `kling-video-v3-omni` | 3-15 seconds | `720p`, `1080p`, `4k` | Per second and selected resolution |
+| `kling-video-v3-turbo` | 3-15 seconds | `720p`, `1080p` | Per second and selected resolution |
+
+Send `resolution` as a top-level field in the create request. Do not use the image-generation `quality` field for video resolution. The effective price is determined when the task is submitted, so do not rely on a fixed documented amount.
+
 ## Create a task
 
 ```bash
@@ -42,6 +52,21 @@ The response includes a public `id` or `task_id`. Store that value; do not use a
   "object": "video",
   "status": "queued"
 }
+```
+
+### Kling V3 example
+
+```bash
+curl -X POST "https://ai.silicogrove.com/v1/videos" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "kling-video-v3",
+    "prompt": "A cinematic sunrise over a futuristic coastal city, slow aerial camera movement",
+    "seconds": "15",
+    "aspect_ratio": "16:9",
+    "resolution": "720p"
+  }'
 ```
 
 ## Create a reference-image task
@@ -75,7 +100,7 @@ curl -X POST "https://ai.silicogrove.com/v1/videos" \
 | `prompt` | Yes | Describe the subject, motion, camera, visual style, and composition. |
 | `seconds` | No | Requested duration as a string, for example `"4"`, `"6"`, `"10"`, or `"15"`. Model-specific limits apply. |
 | `aspect_ratio` | No | `16:9`, `9:16`, or `1:1`. |
-| `resolution` | No | `480p`, `720p`, or `1080p`, subject to the selected model. |
+| `resolution` | No | `480p`, `720p`, `1080p`, or `4k`, subject to the selected model. Send it as a top-level field; do not use `quality` as a replacement. |
 | `image_urls` | No | Preferred array of up to 7 reference image URLs or complete data URLs. |
 | `images` | No | Compatibility alias for `image_urls`; do not send both. |
 | `reference_images` | No | Compatibility array of reference images; do not combine with `input_reference`. |

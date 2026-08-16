@@ -19,6 +19,16 @@ class: api-page
 
 `grok-image-video` 使用多参考图时，超过 10 秒的请求会按 10 秒处理。请始终以最终任务结果为准。
 
+## 支持的可灵 V3 模型
+
+| 模型 | 时长 | 分辨率 | 计费方式 |
+| --- | --- | --- | --- |
+| `kling-video-v3` | 3-15 秒 | `720p`、`1080p`、`4k` | 按秒和所选分辨率计费 |
+| `kling-video-v3-omni` | 3-15 秒 | `720p`、`1080p`、`4k` | 按秒和所选分辨率计费 |
+| `kling-video-v3-turbo` | 3-15 秒 | `720p`、`1080p` | 按秒和所选分辨率计费 |
+
+创建任务时将 `resolution` 作为顶层字段传递。不要使用图像生成的 `quality` 字段表示视频分辨率。实际价格以提交任务时的计算结果为准，不要依赖文档中的固定金额。
+
 ## 创建任务
 
 ```bash
@@ -42,6 +52,21 @@ curl -X POST "https://ai.silicogrove.com/v1/videos" \
   "object": "video",
   "status": "queued"
 }
+```
+
+### 可灵 V3 示例
+
+```bash
+curl -X POST "https://ai.silicogrove.com/v1/videos" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "kling-video-v3",
+    "prompt": "日出照亮未来海滨城市，航拍镜头缓慢前移，电影感光影",
+    "seconds": "15",
+    "aspect_ratio": "16:9",
+    "resolution": "720p"
+  }'
 ```
 
 ## 参考图生视频
@@ -75,7 +100,7 @@ curl -X POST "https://ai.silicogrove.com/v1/videos" \
 | `prompt` | 是 | 建议描述主体、动作、镜头、视觉风格和构图。 |
 | `seconds` | 否 | 请求时长，字符串，例如 `"4"`、`"6"`、`"10"`、`"15"`；实际限制取决于模型。 |
 | `aspect_ratio` | 否 | `16:9`、`9:16` 或 `1:1`。 |
-| `resolution` | 否 | `480p`、`720p` 或 `1080p`，取决于所选模型。 |
+| `resolution` | 否 | `480p`、`720p`、`1080p` 或 `4k`，取决于所选模型。作为顶层字段传递，不要用 `quality` 代替。 |
 | `image_urls` | 否 | 推荐字段，最多 7 个参考图 URL 或完整 data URL。 |
 | `images` | 否 | `image_urls` 的兼容别名；不能同时传。 |
 | `reference_images` | 否 | 参考图兼容字段；不能与 `input_reference` 同时传。 |
