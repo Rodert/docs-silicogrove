@@ -15,6 +15,8 @@ Available models depend on the API key and group. Call `GET /v1/models` before p
 | `grok-image-video` | Yes | 1 image: up to 15s; 2-7 images: up to 10s | 15s | `480p`, `720p` |
 | `grok-video-1.5` | Yes | 0-7 images | 15s | `480p`, `720p` |
 
+For `grok-video-1.5`, `seconds` must be one of `"4"`, `"6"`, `"8"`, `"10"`, `"12"`, or `"15"`. Other values return `seconds must be one of: 4, 6, 8, 10, 12, 15`.
+
 For `grok-image-video`, multi-reference requests above 10 seconds are processed as 10-second requests. Always use the actual task result as the final source of truth.
 
 ## Create a task
