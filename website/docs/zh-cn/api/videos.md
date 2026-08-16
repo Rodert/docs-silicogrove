@@ -8,17 +8,6 @@ class: api-page
 
 可调用模型取决于 API Key 和用户分组。向最终用户展示模型前，请先调用 `GET /v1/models`。
 
-## 支持的 Grok 视频模型
-
-| 模型 | 文生视频 | 参考图 | 最长时长 | 分辨率 |
-| --- | --- | --- | --- | --- |
-| `grok-image-video` | 支持 | 1 张图最长 15 秒；2-7 张图最长 10 秒 | 15 秒 | `480p`、`720p` |
-| `grok-video-1.5` | 支持 | 0-7 张图 | 15 秒 | `480p`、`720p` |
-
-`grok-video-1.5` 的 `seconds` 只能为 `"4"`、`"6"`、`"8"`、`"10"`、`"12"` 或 `"15"`。传入其他时长会返回 `seconds must be one of: 4, 6, 8, 10, 12, 15`。
-
-`grok-image-video` 使用多参考图时，超过 10 秒的请求会按 10 秒处理。请始终以最终任务结果为准。
-
 ## 支持的可灵 V3 模型
 
 | 模型 | 时长 | 分辨率 | 计费方式 |
@@ -36,7 +25,7 @@ curl -X POST "https://ai.silicogrove.com/v1/videos" \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "model": "grok-video-1.5",
+    "model": "kling-video-v3",
     "prompt": "日出照亮未来海滨城市，航拍镜头缓慢前移，电影感光影",
     "seconds": "15",
     "aspect_ratio": "16:9",
@@ -54,24 +43,7 @@ curl -X POST "https://ai.silicogrove.com/v1/videos" \
 }
 ```
 
-### 可灵 V3 示例
-
-以下示例使用 `kling-video-v3` 创建 15 秒、`720p` 的文生视频：
-
-```bash
-curl -X POST "https://ai.silicogrove.com/v1/videos" \
-  -H "Authorization: Bearer YOUR_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "model": "kling-video-v3",
-    "prompt": "日出照亮未来海滨城市，航拍镜头缓慢前移，电影感光影",
-    "seconds": "15",
-    "aspect_ratio": "16:9",
-    "resolution": "720p"
-  }'
-```
-
-创建成功后会立即返回异步任务；保存 `task_id`，再用[查询任务](#查询任务)接口获取进度和结果。
+该示例使用 `kling-video-v3` 创建 15 秒、`720p` 的文生视频。创建成功后会立即返回异步任务；保存 `task_id`，再用[查询任务](#查询任务)接口获取进度和结果。
 
 ```json
 {
@@ -86,28 +58,11 @@ curl -X POST "https://ai.silicogrove.com/v1/videos" \
 }
 ```
 
-## 参考图生视频
+## 参考素材
 
 参考图可以使用公网 HTTPS URL，或完整的 `data:` URL，例如 `data:image/png;base64,...`。不要传本地文件路径或裸 base64。可先通过[临时素材接口](/zh-cn/api/assets)上传本地文件。
 
 推荐使用 `image_urls`。为兼容既有接入，`images` 也可用，但二者不能同时传递。`reference_images` 以及 `input_reference: {"image_url":"..."}` 也可用于兼容接入；同一请求不能同时传 `reference_images` 和 `input_reference`。
-
-```bash
-curl -X POST "https://ai.silicogrove.com/v1/videos" \
-  -H "Authorization: Bearer YOUR_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "model": "grok-video-1.5",
-    "prompt": "柔和棚拍光线下的高端产品展示，镜头缓慢环绕旋转",
-    "seconds": "10",
-    "aspect_ratio": "9:16",
-    "resolution": "720p",
-    "image_urls": [
-      "https://example.com/product-front.png",
-      "https://example.com/product-side.png"
-    ]
-  }'
-```
 
 ## 请求字段
 
@@ -123,7 +78,7 @@ curl -X POST "https://ai.silicogrove.com/v1/videos" \
 | `reference_images` | 否 | 参考图兼容字段；不能与 `input_reference` 同时传。 |
 | `input_reference` | 否 | 单参考图兼容形式：`{ "image_url": "https://..." }`。 |
 
-旧版 `video-ds-*` 模型支持 `images`、`videos`、`audios`，数量上限分别为 4 张图片、3 个视频和 1 个音频。Grok 视频模型不要传视频或音频参考素材。
+旧版 `video-ds-*` 模型支持 `images`、`videos`、`audios`，数量上限分别为 4 张图片、3 个视频和 1 个音频。
 
 ## 查询任务
 

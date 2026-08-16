@@ -8,17 +8,6 @@ Video generation is asynchronous. Submit to `POST /v1/videos`, retain the return
 
 Available models depend on the API key and group. Call `GET /v1/models` before presenting model choices to end users.
 
-## Supported Grok video models
-
-| Model | Text to video | Reference images | Maximum duration | Resolution |
-| --- | --- | --- | --- | --- |
-| `grok-image-video` | Yes | 1 image: up to 15s; 2-7 images: up to 10s | 15s | `480p`, `720p` |
-| `grok-video-1.5` | Yes | 0-7 images | 15s | `480p`, `720p` |
-
-For `grok-video-1.5`, `seconds` must be one of `"4"`, `"6"`, `"8"`, `"10"`, `"12"`, or `"15"`. Other values return `seconds must be one of: 4, 6, 8, 10, 12, 15`.
-
-For `grok-image-video`, multi-reference requests above 10 seconds are processed as 10-second requests. Always use the actual task result as the final source of truth.
-
 ## Supported Kling V3 models
 
 | Model | Duration | Resolution | Billing |
@@ -36,7 +25,7 @@ curl -X POST "https://ai.silicogrove.com/v1/videos" \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "model": "grok-video-1.5",
+    "model": "kling-video-v3",
     "prompt": "A cinematic sunrise over a futuristic coastal city, slow aerial camera movement",
     "seconds": "15",
     "aspect_ratio": "16:9",
@@ -54,24 +43,7 @@ The response includes a public `id` or `task_id`. Store that value; do not use a
 }
 ```
 
-### Kling V3 example
-
-This example uses `kling-video-v3` to create a 15-second, `720p` text-to-video task:
-
-```bash
-curl -X POST "https://ai.silicogrove.com/v1/videos" \
-  -H "Authorization: Bearer YOUR_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "model": "kling-video-v3",
-    "prompt": "A cinematic sunrise over a futuristic coastal city, slow aerial camera movement",
-    "seconds": "15",
-    "aspect_ratio": "16:9",
-    "resolution": "720p"
-  }'
-```
-
-A successful create request returns an asynchronous task. Store `task_id`, then use [Poll a task](#poll-a-task) to retrieve progress and output.
+This example uses `kling-video-v3` to create a 15-second, `720p` text-to-video task. A successful create request returns an asynchronous task. Store `task_id`, then use [Poll a task](#poll-a-task) to retrieve progress and output.
 
 ```json
 {
@@ -86,28 +58,11 @@ A successful create request returns an asynchronous task. Store `task_id`, then 
 }
 ```
 
-## Create a reference-image task
+## Reference assets
 
 Use public HTTPS URLs or complete `data:` URLs such as `data:image/png;base64,...`. Do not send a local file path or bare base64 bytes. Local files can be uploaded through [Reference assets](/api/assets) first.
 
 `image_urls` is the preferred field. `images` is accepted for compatibility. Send only one of them. `reference_images` and `input_reference: {"image_url":"..."}` are also accepted for integrations that use those names; do not combine `reference_images` and `input_reference` in one request.
-
-```bash
-curl -X POST "https://ai.silicogrove.com/v1/videos" \
-  -H "Authorization: Bearer YOUR_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "model": "grok-video-1.5",
-    "prompt": "Create a premium product showcase with soft studio lighting and a slow rotating camera",
-    "seconds": "10",
-    "aspect_ratio": "9:16",
-    "resolution": "720p",
-    "image_urls": [
-      "https://example.com/product-front.png",
-      "https://example.com/product-side.png"
-    ]
-  }'
-```
 
 ## Request fields
 
@@ -123,7 +78,7 @@ curl -X POST "https://ai.silicogrove.com/v1/videos" \
 | `reference_images` | No | Compatibility array of reference images; do not combine with `input_reference`. |
 | `input_reference` | No | Compatibility single-image form: `{ "image_url": "https://..." }`. |
 
-The older `video-ds-*` models support `images`, `videos`, and `audios`. Their media limits are 4 images, 3 videos, and 1 audio file. Do not send video or audio references to the Grok models.
+The older `video-ds-*` models support `images`, `videos`, and `audios`. Their media limits are 4 images, 3 videos, and 1 audio file.
 
 ## Poll a task
 
