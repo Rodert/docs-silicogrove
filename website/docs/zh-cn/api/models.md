@@ -10,7 +10,7 @@ class: api-page
 | --- | --- | --- |
 | 文本 | `gpt-5.4-mini`、Claude、Gemini 等 | `/v1/chat/completions` |
 | 图片 | `gpt-image-2`、Gemini 图片模型、`grok-imagine-image` | 同步 `/v1/images/generations`；异步 `/v1/images/tasks` |
-| 视频 | `video-ds-2.0`、`as-sd2.0-fast`、`grok-image-video`、`grok-video-1.5` | `/v1/videos` |
+| 视频 | `video-ds-2.0`、`as-sd2.0-fast`、`grok-image-video`、`grok-video-1.5`、`kling-video-v3` | `/v1/videos` |
 | 音频 | 以模型列表返回为准 | `/v1/audio/*` |
 
 ```bash

@@ -56,6 +56,8 @@ curl -X POST "https://ai.silicogrove.com/v1/videos" \
 
 ### 可灵 V3 示例
 
+以下示例使用 `kling-video-v3` 创建 15 秒、`720p` 的文生视频：
+
 ```bash
 curl -X POST "https://ai.silicogrove.com/v1/videos" \
   -H "Authorization: Bearer YOUR_API_KEY" \
@@ -67,6 +69,21 @@ curl -X POST "https://ai.silicogrove.com/v1/videos" \
     "aspect_ratio": "16:9",
     "resolution": "720p"
   }'
+```
+
+创建成功后会立即返回异步任务；保存 `task_id`，再用[查询任务](#查询任务)接口获取进度和结果。
+
+```json
+{
+  "id": "task_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+  "task_id": "task_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+  "object": "video.generation",
+  "model": "kling-video-v3",
+  "status": "queued",
+  "progress": 0,
+  "created_at": 1786869597,
+  "result": {}
+}
 ```
 
 ## 参考图生视频

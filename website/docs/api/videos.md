@@ -56,6 +56,8 @@ The response includes a public `id` or `task_id`. Store that value; do not use a
 
 ### Kling V3 example
 
+This example uses `kling-video-v3` to create a 15-second, `720p` text-to-video task:
+
 ```bash
 curl -X POST "https://ai.silicogrove.com/v1/videos" \
   -H "Authorization: Bearer YOUR_API_KEY" \
@@ -67,6 +69,21 @@ curl -X POST "https://ai.silicogrove.com/v1/videos" \
     "aspect_ratio": "16:9",
     "resolution": "720p"
   }'
+```
+
+A successful create request returns an asynchronous task. Store `task_id`, then use [Poll a task](#poll-a-task) to retrieve progress and output.
+
+```json
+{
+  "id": "task_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+  "task_id": "task_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+  "object": "video.generation",
+  "model": "kling-video-v3",
+  "status": "queued",
+  "progress": 0,
+  "created_at": 1786869597,
+  "result": {}
+}
 ```
 
 ## Create a reference-image task
