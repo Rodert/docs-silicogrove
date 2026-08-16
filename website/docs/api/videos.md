@@ -143,3 +143,17 @@ curl -L "https://ai.silicogrove.com/v1/videos/TASK_ID/content" \
 ```
 
 The service may return a signed result URL internally. It is temporary and should be downloaded promptly. Use the content endpoint above rather than reconstructing an upstream URL, task ID, domain, or signature.
+
+## Security and reliability recommendations
+
+### API keys and callers
+
+- Store API keys only in server-side environment variables or a secrets manager. Browsers, mobile apps, and public frontend code must not hold long-lived keys.
+- Use separate API keys per application or purpose. A compromised key can then be revoked without interrupting unrelated workloads.
+- After creating a task, persist both your local business identifier and the returned `task_id` for polling, reconciliation, and retry control.
+
+### Reference assets and downloads
+
+- Reference URLs must be safely reachable by the video service. Do not provide private-network IP addresses, administrative endpoints, cloud credential URLs, or local file paths.
+- After completion, download videos through the authenticated `/content` endpoint rather than exposing temporary result URLs long term.
+- Create a replacement task only after the existing task explicitly returns `failed`. Continue polling the same `task_id` while it is `queued` or `in_progress` to prevent duplicate generations and charges.
