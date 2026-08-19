@@ -73,6 +73,29 @@ const chineseApiSidebar = [
   }
 ]
 
+const supplementalLocaleThemes = {
+  'zh-tw': {
+    nav: [{ text: 'API 文件', link: '/zh-tw/api/' }, { text: '教學', link: '/zh-tw/tutorials/' }, { text: 'Skills', link: '/zh-tw/skills/' }, { text: '常見問題', link: '/zh-tw/faq/' }],
+    sidebar: { '/zh-tw/api/': [{ text: 'API 文件', items: [{ text: '概覽', link: '/zh-tw/api/' }] }], '/zh-tw/tutorials/': [{ text: '教學', items: [{ text: '全部教學', link: '/zh-tw/tutorials/' }] }], '/zh-tw/skills/': [{ text: 'Skills', items: [{ text: '推薦 Skills', link: '/zh-tw/skills/' }] }], '/zh-tw/faq/': [{ text: '常見問題', items: [{ text: '常見問題', link: '/zh-tw/faq/' }] }] }
+  },
+  ja: {
+    nav: [{ text: 'API ドキュメント', link: '/ja/api/' }, { text: 'チュートリアル', link: '/ja/tutorials/' }, { text: 'Skills', link: '/ja/skills/' }, { text: 'よくある質問', link: '/ja/faq/' }],
+    sidebar: { '/ja/api/': [{ text: 'API ドキュメント', items: [{ text: '概要', link: '/ja/api/' }] }], '/ja/tutorials/': [{ text: 'チュートリアル', items: [{ text: 'すべてのチュートリアル', link: '/ja/tutorials/' }] }], '/ja/skills/': [{ text: 'Skills', items: [{ text: 'おすすめ Skills', link: '/ja/skills/' }] }], '/ja/faq/': [{ text: 'よくある質問', items: [{ text: 'よくある質問', link: '/ja/faq/' }] }] }
+  },
+  ru: {
+    nav: [{ text: 'API', link: '/ru/api/' }, { text: 'Руководства', link: '/ru/tutorials/' }, { text: 'Skills', link: '/ru/skills/' }, { text: 'Частые вопросы', link: '/ru/faq/' }],
+    sidebar: { '/ru/api/': [{ text: 'API', items: [{ text: 'Обзор', link: '/ru/api/' }] }], '/ru/tutorials/': [{ text: 'Руководства', items: [{ text: 'Все руководства', link: '/ru/tutorials/' }] }], '/ru/skills/': [{ text: 'Skills', items: [{ text: 'Рекомендуемые Skills', link: '/ru/skills/' }] }], '/ru/faq/': [{ text: 'Частые вопросы', items: [{ text: 'Частые вопросы', link: '/ru/faq/' }] }] }
+  },
+  fr: {
+    nav: [{ text: 'API', link: '/fr/api/' }, { text: 'Tutoriels', link: '/fr/tutorials/' }, { text: 'Skills', link: '/fr/skills/' }, { text: 'FAQ', link: '/fr/faq/' }],
+    sidebar: { '/fr/api/': [{ text: 'API', items: [{ text: 'Vue d’ensemble', link: '/fr/api/' }] }], '/fr/tutorials/': [{ text: 'Tutoriels', items: [{ text: 'Tous les tutoriels', link: '/fr/tutorials/' }] }], '/fr/skills/': [{ text: 'Skills', items: [{ text: 'Skills recommandés', link: '/fr/skills/' }] }], '/fr/faq/': [{ text: 'FAQ', items: [{ text: 'Questions fréquentes', link: '/fr/faq/' }] }] }
+  },
+  es: {
+    nav: [{ text: 'API', link: '/es/api/' }, { text: 'Tutoriales', link: '/es/tutorials/' }, { text: 'Skills', link: '/es/skills/' }, { text: 'Preguntas frecuentes', link: '/es/faq/' }],
+    sidebar: { '/es/api/': [{ text: 'API', items: [{ text: 'Descripción general', link: '/es/api/' }] }], '/es/tutorials/': [{ text: 'Tutoriales', items: [{ text: 'Todos los tutoriales', link: '/es/tutorials/' }] }], '/es/skills/': [{ text: 'Skills', items: [{ text: 'Skills recomendados', link: '/es/skills/' }] }], '/es/faq/': [{ text: 'Preguntas frecuentes', items: [{ text: 'Preguntas frecuentes', link: '/es/faq/' }] }] }
+  }
+}
+
 export default defineConfig({
   title: 'SilicoGrove Docs',
   description: 'API documentation, tutorials, and skills for SilicoGrove.',
@@ -146,11 +169,11 @@ export default defineConfig({
         }
       }
     },
-    'zh-tw': { label: '繁體中文', lang: 'zh-TW', link: '/zh-tw/' },
-    ja: { label: '日本語', lang: 'ja-JP', link: '/ja/' },
-    ru: { label: 'Русский', lang: 'ru-RU', link: '/ru/' },
-    fr: { label: 'Français', lang: 'fr-FR', link: '/fr/' },
-    es: { label: 'Español', lang: 'es-ES', link: '/es/' }
+    'zh-tw': { label: '繁體中文', lang: 'zh-TW', link: '/zh-tw/', themeConfig: supplementalLocaleThemes['zh-tw'] },
+    ja: { label: '日本語', lang: 'ja-JP', link: '/ja/', themeConfig: supplementalLocaleThemes.ja },
+    ru: { label: 'Русский', lang: 'ru-RU', link: '/ru/', themeConfig: supplementalLocaleThemes.ru },
+    fr: { label: 'Français', lang: 'fr-FR', link: '/fr/', themeConfig: supplementalLocaleThemes.fr },
+    es: { label: 'Español', lang: 'es-ES', link: '/es/', themeConfig: supplementalLocaleThemes.es }
   },
   themeConfig: {
     logo: '/silicogrove-logo.png',
