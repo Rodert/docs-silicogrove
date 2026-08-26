@@ -25,7 +25,7 @@ Send `resolution` as a top-level field in the create request. Do not use the ima
 | `grok-imagine-video` | Text to video | Model-dependent | Model-dependent |
 | `grok-imagine-video-1.5` | Text to video, first-frame image to video, reference-image video | `4`, `6`, `8`, `10`, `12`, or `15` seconds | Text and first-frame: `480p`, `720p`, `1080p`; reference images: up to `720p` |
 
-`grok-imagine-video-1.5` has two distinct image modes. Use exactly one mode in a request:
+`grok-imagine-video-1.5` has two distinct image modes. Use exactly one image mode in each request:
 
 - First-frame mode: send one `image` URL. It becomes the opening frame of the video.
 - Reference-image mode: send `reference_images` with 1-7 URLs. Use `<IMAGE_1>`, `<IMAGE_2>`, and so on in the prompt when referring to a specific image.
