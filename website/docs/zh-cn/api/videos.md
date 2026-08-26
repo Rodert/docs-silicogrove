@@ -18,6 +18,92 @@ class: api-page
 
 创建任务时将 `resolution` 作为顶层字段传递。不要使用图像生成的 `quality` 字段表示视频分辨率。实际价格以提交任务时的计算结果为准，不要依赖文档中的固定金额。
 
+## 支持的 Grok Imagine 模型
+
+| 模型 | 生成方式 | 时长 | 分辨率 |
+| --- | --- | --- | --- |
+| `grok-imagine-video` | 文生视频 | 取决于模型 | 取决于模型 |
+| `grok-imagine-video-1.5` | 文生视频、首帧图生视频、参考图生视频 | `4`、`6`、`8`、`10`、`12`、`15` 秒 | 文生和首帧支持 `480p`、`720p`、`1080p`；参考图最高 `720p` |
+
+`grok-imagine-video-1.5` 有两种互斥的图片模式，一次请求只能选择其中一种：
+
+- 首帧模式：传 1 个 `image` URL，它会作为生成视频的第一帧。
+- 参考图模式：传 1-7 个 `reference_images` URL。需要引用具体图片时，在提示词中使用 `<IMAGE_1>`、`<IMAGE_2>` 等占位符。
+
+不要将 `image`、`images`、`image_urls` 或 `input_reference` 与 `reference_images` 同时传递。参考图模式仅支持最高 `720p`，传递 `1080p` 会被拒绝。两个模型都使用下文相同的异步任务创建、查询和下载流程。
+
+### Grok Imagine 文生视频
+
+当前 `grok-imagine-video` 接入仅支持文生视频；需要图片输入时请使用 `grok-imagine-video-1.5`。
+
+```bash
+curl -X POST "https://ai.silicogrove.com/v1/videos" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "grok-imagine-video",
+    "prompt": "黄昏时分，一只纸船穿过雨后的城市街道",
+    "seconds": "8",
+    "aspect_ratio": "16:9",
+    "resolution": "720p"
+  }'
+```
+
+### Grok Imagine 1.5 文生视频
+
+```bash
+curl -X POST "https://ai.silicogrove.com/v1/videos" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "grok-imagine-video-1.5",
+    "prompt": "一只猫骑着摩托车穿过夜晚的上海，电影感跟拍镜头",
+    "seconds": "8",
+    "aspect_ratio": "16:9",
+    "resolution": "720p"
+  }'
+```
+
+### Grok Imagine 1.5 首帧图生视频
+
+`image` 是单个 URL，不是数组；图片会作为视频首帧。
+
+```bash
+curl -X POST "https://ai.silicogrove.com/v1/videos" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "grok-imagine-video-1.5",
+    "prompt": "人物缓慢转向镜头，头发随风自然摆动，镜头电影感缓慢推进",
+    "image": "https://example.com/first-frame.jpg",
+    "seconds": "8",
+    "aspect_ratio": "16:9",
+    "resolution": "1080p"
+  }'
+```
+
+### Grok Imagine 1.5 参考图生视频
+
+`reference_images` 是包含 1-7 个 URL 的数组，用于保持人物、服装或商品等视觉元素的一致性，不会锁定视频首帧。
+
+```bash
+curl -X POST "https://ai.silicogrove.com/v1/videos" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "grok-imagine-video-1.5",
+    "prompt": "让 <IMAGE_1> 中的人物穿着 <IMAGE_2> 中的服装，在城市街道中拿着 <IMAGE_3> 中的商品行走，电影感商业广告镜头",
+    "reference_images": [
+      "https://example.com/person.jpg",
+      "https://example.com/clothes.jpg",
+      "https://example.com/product.jpg"
+    ],
+    "seconds": "8",
+    "aspect_ratio": "16:9",
+    "resolution": "720p"
+  }'
+```
+
 ## 创建任务
 
 ```bash
@@ -75,6 +161,7 @@ curl -X POST "https://ai.silicogrove.com/v1/videos" \
 | `resolution` | 否 | `480p`、`720p`、`1080p` 或 `4k`，取决于所选模型。作为顶层字段传递，不要用 `quality` 代替。 |
 | `image_urls` | 否 | 推荐字段，最多 7 个参考图 URL 或完整 data URL。 |
 | `images` | 否 | `image_urls` 的兼容别名；不能同时传。 |
+| `image` | 否 | 仅用于 `grok-imagine-video-1.5` 的首帧模式。传单个图片 URL 或完整 data URL；不能与 `reference_images` 同时传。 |
 | `reference_images` | 否 | 参考图兼容字段；不能与 `input_reference` 同时传。 |
 | `input_reference` | 否 | 单参考图兼容形式：`{ "image_url": "https://..." }`。 |
 

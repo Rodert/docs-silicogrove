@@ -18,6 +18,92 @@ Available models depend on the API key and group. Call `GET /v1/models` before p
 
 Send `resolution` as a top-level field in the create request. Do not use the image-generation `quality` field for video resolution. The effective price is determined when the task is submitted, so do not rely on a fixed documented amount.
 
+## Supported Grok Imagine models
+
+| Model | Generation modes | Duration | Resolution |
+| --- | --- | --- | --- |
+| `grok-imagine-video` | Text to video | Model-dependent | Model-dependent |
+| `grok-imagine-video-1.5` | Text to video, first-frame image to video, reference-image video | `4`, `6`, `8`, `10`, `12`, or `15` seconds | Text and first-frame: `480p`, `720p`, `1080p`; reference images: up to `720p` |
+
+`grok-imagine-video-1.5` has two distinct image modes. Use exactly one mode in a request:
+
+- First-frame mode: send one `image` URL. It becomes the opening frame of the video.
+- Reference-image mode: send `reference_images` with 1-7 URLs. Use `<IMAGE_1>`, `<IMAGE_2>`, and so on in the prompt when referring to a specific image.
+
+Do not send `image`, `images`, `image_urls`, or `input_reference` together with `reference_images`. Reference-image mode is limited to `720p`; a request using `1080p` is rejected. These models use the same asynchronous task, polling, and download flow described below.
+
+### Grok Imagine text to video
+
+The current `grok-imagine-video` integration accepts text-to-video requests only. Use `grok-imagine-video-1.5` when an image is required.
+
+```bash
+curl -X POST "https://ai.silicogrove.com/v1/videos" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "grok-imagine-video",
+    "prompt": "A paper boat travels through a rain-soaked city at dusk",
+    "seconds": "8",
+    "aspect_ratio": "16:9",
+    "resolution": "720p"
+  }'
+```
+
+### Grok Imagine 1.5 text to video
+
+```bash
+curl -X POST "https://ai.silicogrove.com/v1/videos" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "grok-imagine-video-1.5",
+    "prompt": "A cat rides a motorcycle through Shanghai at night, cinematic tracking shot",
+    "seconds": "8",
+    "aspect_ratio": "16:9",
+    "resolution": "720p"
+  }'
+```
+
+### Grok Imagine 1.5 first-frame image to video
+
+`image` is a single URL, not an array. The supplied image is the first frame.
+
+```bash
+curl -X POST "https://ai.silicogrove.com/v1/videos" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "grok-imagine-video-1.5",
+    "prompt": "The person slowly turns toward the camera, natural wind in their hair, cinematic push-in",
+    "image": "https://example.com/first-frame.jpg",
+    "seconds": "8",
+    "aspect_ratio": "16:9",
+    "resolution": "1080p"
+  }'
+```
+
+### Grok Imagine 1.5 reference-image video
+
+`reference_images` is an array of 1-7 URLs. It guides visual consistency rather than fixing the first frame.
+
+```bash
+curl -X POST "https://ai.silicogrove.com/v1/videos" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "grok-imagine-video-1.5",
+    "prompt": "The person from <IMAGE_1> walks through a city street wearing the clothes from <IMAGE_2> and holding the product from <IMAGE_3>, cinematic commercial video",
+    "reference_images": [
+      "https://example.com/person.jpg",
+      "https://example.com/clothes.jpg",
+      "https://example.com/product.jpg"
+    ],
+    "seconds": "8",
+    "aspect_ratio": "16:9",
+    "resolution": "720p"
+  }'
+```
+
 ## Create a task
 
 ```bash
@@ -75,6 +161,7 @@ Use public HTTPS URLs or complete `data:` URLs such as `data:image/png;base64,..
 | `resolution` | No | `480p`, `720p`, `1080p`, or `4k`, subject to the selected model. Send it as a top-level field; do not use `quality` as a replacement. |
 | `image_urls` | No | Preferred array of up to 7 reference image URLs or complete data URLs. |
 | `images` | No | Compatibility alias for `image_urls`; do not send both. |
+| `image` | No | `grok-imagine-video-1.5` first-frame mode only. A single image URL or complete data URL. Do not combine with `reference_images`. |
 | `reference_images` | No | Compatibility array of reference images; do not combine with `input_reference`. |
 | `input_reference` | No | Compatibility single-image form: `{ "image_url": "https://..." }`. |
 
