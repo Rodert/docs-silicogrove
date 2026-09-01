@@ -18,92 +18,6 @@ Available models depend on the API key and group. Call `GET /v1/models` before p
 
 Send `resolution` as a top-level field in the create request. Do not use the image-generation `quality` field for video resolution. The effective price is determined when the task is submitted, so do not rely on a fixed documented amount.
 
-## Supported Grok Imagine models
-
-| Model | Generation modes | Duration | Resolution |
-| --- | --- | --- | --- |
-| `grok-imagine-video` | Text to video | Model-dependent | Model-dependent |
-| `grok-imagine-video-1.5` | Text to video, first-frame image to video, reference-image video | `4`, `6`, `8`, `10`, `12`, or `15` seconds | Text and first-frame: `480p`, `720p`, `1080p`; reference images: up to `720p` |
-
-`grok-imagine-video-1.5` has two distinct image modes. Use exactly one image mode in each request:
-
-- First-frame mode: send one `image` URL. It becomes the opening frame of the video.
-- Reference-image mode: send `reference_images` with 1-7 URLs. Use `<IMAGE_1>`, `<IMAGE_2>`, and so on in the prompt when referring to a specific image.
-
-Do not send `image`, `images`, `image_urls`, or `input_reference` together with `reference_images`. Reference-image mode is limited to `720p`; a request using `1080p` is rejected. These models use the same asynchronous task, polling, and download flow described below.
-
-### Grok Imagine text to video
-
-The current `grok-imagine-video` integration accepts text-to-video requests only. Use `grok-imagine-video-1.5` when an image is required.
-
-```bash
-curl -X POST "https://ai.silicogrove.com/v1/videos" \
-  -H "Authorization: Bearer YOUR_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "model": "grok-imagine-video",
-    "prompt": "A paper boat travels through a rain-soaked city at dusk",
-    "seconds": "8",
-    "aspect_ratio": "16:9",
-    "resolution": "720p"
-  }'
-```
-
-### Grok Imagine 1.5 text to video
-
-```bash
-curl -X POST "https://ai.silicogrove.com/v1/videos" \
-  -H "Authorization: Bearer YOUR_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "model": "grok-imagine-video-1.5",
-    "prompt": "A cat rides a motorcycle through Shanghai at night, cinematic tracking shot",
-    "seconds": "8",
-    "aspect_ratio": "16:9",
-    "resolution": "720p"
-  }'
-```
-
-### Grok Imagine 1.5 first-frame image to video
-
-`image` is a single URL, not an array. The supplied image is the first frame.
-
-```bash
-curl -X POST "https://ai.silicogrove.com/v1/videos" \
-  -H "Authorization: Bearer YOUR_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "model": "grok-imagine-video-1.5",
-    "prompt": "The person slowly turns toward the camera, natural wind in their hair, cinematic push-in",
-    "image": "https://example.com/first-frame.jpg",
-    "seconds": "8",
-    "aspect_ratio": "16:9",
-    "resolution": "1080p"
-  }'
-```
-
-### Grok Imagine 1.5 reference-image video
-
-`reference_images` is an array of 1-7 URLs. It guides visual consistency rather than fixing the first frame.
-
-```bash
-curl -X POST "https://ai.silicogrove.com/v1/videos" \
-  -H "Authorization: Bearer YOUR_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "model": "grok-imagine-video-1.5",
-    "prompt": "The person from <IMAGE_1> walks through a city street wearing the clothes from <IMAGE_2> and holding the product from <IMAGE_3>, cinematic commercial video",
-    "reference_images": [
-      "https://example.com/person.jpg",
-      "https://example.com/clothes.jpg",
-      "https://example.com/product.jpg"
-    ],
-    "seconds": "8",
-    "aspect_ratio": "16:9",
-    "resolution": "720p"
-  }'
-```
-
 ## Create a task
 
 ```bash
@@ -199,3 +113,29 @@ The service may return a signed result URL internally. It is temporary and shoul
 - Reference URLs must be safely reachable by the video service. Do not provide private-network IP addresses, administrative endpoints, cloud credential URLs, or local file paths.
 - After completion, download videos through the authenticated `/content` endpoint rather than exposing temporary result URLs long term.
 - Create a replacement task only after the existing task explicitly returns `failed`. Continue polling the same `task_id` while it is `queued` or `in_progress` to prevent duplicate generations and charges.
+
+## Grok Imagine models (currently unavailable)
+
+::: warning
+`grok-imagine-video` and `grok-imagine-video-1.5` are currently unavailable and must not be used for production requests. This section is retained as a historical parameter reference; use the active Kling models above.
+:::
+
+| Model | Generation modes | Duration | Resolution |
+| --- | --- | --- | --- |
+| `grok-imagine-video` | Text to video | Model-dependent | Model-dependent |
+| `grok-imagine-video-1.5` | Text to video, first-frame image to video, reference-image video | `4`, `6`, `8`, `10`, `12`, or `15` seconds | Text and first-frame: `480p`, `720p`, `1080p`; reference images: up to `720p` |
+
+`grok-imagine-video-1.5` has two mutually exclusive image modes: first-frame mode accepts one `image` URL; reference-image mode accepts 1-7 `reference_images` URLs and uses `<IMAGE_1>`, `<IMAGE_2>`, and similar placeholders in the prompt. Do not send `image`, `images`, `image_urls`, or `input_reference` with `reference_images`. Reference-image mode is limited to `720p`.
+
+Historical request example:
+
+```json
+{
+  "model": "grok-imagine-video-1.5",
+  "prompt": "The person from <IMAGE_1> walks through a city street in a cinematic commercial shot",
+  "reference_images": ["https://example.com/person.jpg"],
+  "seconds": "8",
+  "aspect_ratio": "16:9",
+  "resolution": "720p"
+}
+```
