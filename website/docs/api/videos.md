@@ -8,7 +8,17 @@ Video generation is asynchronous. Submit to `POST /v1/videos`, retain the return
 
 Available models depend on the API key and group. Call `GET /v1/models` before presenting model choices to end users.
 
-## Supported Kling V3 models
+## Recommended model: Grok Video 1.5
+
+| Model | Duration | Resolution |
+| --- | --- | --- |
+| `grok-video-1.5` | `6`, `8`, `10`, `12`, or `15` seconds | Check the model response |
+
+::: warning
+For `grok-video-1.5`, `seconds` must be the string `"6"`, `"8"`, `"10"`, `"12"`, or `"15"`. Sending `"4"` or any other value returns: `seconds must be one of: 6, 8, 10, 12, 15`.
+:::
+
+## Other supported Kling V3 models
 
 | Model | Duration | Resolution | Billing |
 | --- | --- | --- | --- |
@@ -16,7 +26,7 @@ Available models depend on the API key and group. Call `GET /v1/models` before p
 | `kling-video-v3-omni` | 3-15 seconds | `720p`, `1080p`, `4k` | Per second and selected resolution |
 | `kling-video-v3-turbo` | 3-15 seconds | `720p`, `1080p` | Per second and selected resolution |
 
-Send `resolution` as a top-level field in the create request. Do not use the image-generation `quality` field for video resolution. The effective price is determined when the task is submitted, so do not rely on a fixed documented amount.
+Send `resolution` as a top-level field in Kling create requests. Do not use the image-generation `quality` field for video resolution. The effective price is determined when the task is submitted, so do not rely on a fixed documented amount.
 
 ## Create a task
 
@@ -25,7 +35,7 @@ curl -X POST "https://ai.silicogrove.com/v1/videos" \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "model": "kling-video-v3",
+    "model": "grok-video-1.5",
     "prompt": "A cinematic sunrise over a futuristic coastal city, slow aerial camera movement",
     "seconds": "15",
     "aspect_ratio": "16:9",
@@ -43,14 +53,14 @@ The response includes a public `id` or `task_id`. Store that value; do not use a
 }
 ```
 
-This example uses `kling-video-v3` to create a 15-second, `720p` text-to-video task. A successful create request returns an asynchronous task. Store `task_id`, then use [Poll a task](#poll-a-task) to retrieve progress and output.
+This example uses the recommended `grok-video-1.5` model to create a 15-second text-to-video task. A successful create request returns an asynchronous task. Store `task_id`, then use [Poll a task](#poll-a-task) to retrieve progress and output.
 
 ```json
 {
   "id": "task_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
   "task_id": "task_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
   "object": "video.generation",
-  "model": "kling-video-v3",
+  "model": "grok-video-1.5",
   "status": "queued",
   "progress": 0,
   "created_at": 1786869597,
@@ -70,7 +80,7 @@ Use public HTTPS URLs or complete `data:` URLs such as `data:image/png;base64,..
 | --- | --- | --- |
 | `model` | Yes | A video model available to the API key. |
 | `prompt` | Yes | Describe the subject, motion, camera, visual style, and composition. |
-| `seconds` | No | Requested duration as a string, for example `"4"`, `"6"`, `"10"`, or `"15"`. Model-specific limits apply. |
+| `seconds` | No | Requested duration as a string, for example `"6"`, `"8"`, `"10"`, or `"15"`. Model-specific limits apply. `grok-video-1.5` accepts only `"6"`, `"8"`, `"10"`, `"12"`, or `"15"`. |
 | `aspect_ratio` | No | `16:9`, `9:16`, or `1:1`. |
 | `resolution` | No | `480p`, `720p`, `1080p`, or `4k`, subject to the selected model. Send it as a top-level field; do not use `quality` as a replacement. |
 | `image_urls` | No | Preferred array of up to 7 reference image URLs or complete data URLs. |

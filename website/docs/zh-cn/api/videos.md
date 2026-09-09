@@ -8,7 +8,17 @@ class: api-page
 
 可调用模型取决于 API Key 和用户分组。向最终用户展示模型前，请先调用 `GET /v1/models`。
 
-## 支持的可灵 V3 模型
+## 首推模型：Grok Video 1.5
+
+| 模型 | 时长 | 分辨率 |
+| --- | --- | --- |
+| `grok-video-1.5` | `6`、`8`、`10`、`12`、`15` 秒 | 以模型实际返回为准 |
+
+::: warning
+`grok-video-1.5` 的 `seconds` 只能传字符串 `"6"`、`"8"`、`"10"`、`"12"` 或 `"15"`。传入 `"4"` 或其他值会返回：`seconds must be one of: 6, 8, 10, 12, 15`。
+:::
+
+## 其他支持的可灵 V3 模型
 
 | 模型 | 时长 | 分辨率 | 计费方式 |
 | --- | --- | --- | --- |
@@ -16,7 +26,7 @@ class: api-page
 | `kling-video-v3-omni` | 3-15 秒 | `720p`、`1080p`、`4k` | 按秒和所选分辨率计费 |
 | `kling-video-v3-turbo` | 3-15 秒 | `720p`、`1080p` | 按秒和所选分辨率计费 |
 
-创建任务时将 `resolution` 作为顶层字段传递。不要使用图像生成的 `quality` 字段表示视频分辨率。实际价格以提交任务时的计算结果为准，不要依赖文档中的固定金额。
+创建可灵任务时将 `resolution` 作为顶层字段传递。不要使用图像生成的 `quality` 字段表示视频分辨率。实际价格以提交任务时的计算结果为准，不要依赖文档中的固定金额。
 
 ## 创建任务
 
@@ -25,7 +35,7 @@ curl -X POST "https://ai.silicogrove.com/v1/videos" \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "model": "kling-video-v3",
+    "model": "grok-video-1.5",
     "prompt": "日出照亮未来海滨城市，航拍镜头缓慢前移，电影感光影",
     "seconds": "15",
     "aspect_ratio": "16:9",
@@ -43,14 +53,14 @@ curl -X POST "https://ai.silicogrove.com/v1/videos" \
 }
 ```
 
-该示例使用 `kling-video-v3` 创建 15 秒、`720p` 的文生视频。创建成功后会立即返回异步任务；保存 `task_id`，再用[查询任务](#查询任务)接口获取进度和结果。
+该示例使用首推模型 `grok-video-1.5` 创建 15 秒的文生视频。创建成功后会立即返回异步任务；保存 `task_id`，再用[查询任务](#查询任务)接口获取进度和结果。
 
 ```json
 {
   "id": "task_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
   "task_id": "task_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
   "object": "video.generation",
-  "model": "kling-video-v3",
+  "model": "grok-video-1.5",
   "status": "queued",
   "progress": 0,
   "created_at": 1786869597,
@@ -70,7 +80,7 @@ curl -X POST "https://ai.silicogrove.com/v1/videos" \
 | --- | --- | --- |
 | `model` | 是 | API Key 可调用的视频模型。 |
 | `prompt` | 是 | 建议描述主体、动作、镜头、视觉风格和构图。 |
-| `seconds` | 否 | 请求时长，字符串，例如 `"4"`、`"6"`、`"10"`、`"15"`；实际限制取决于模型。 |
+| `seconds` | 否 | 请求时长，字符串，例如 `"6"`、`"8"`、`"10"`、`"15"`；实际限制取决于模型。`grok-video-1.5` 仅支持 `"6"`、`"8"`、`"10"`、`"12"`、`"15"`。 |
 | `aspect_ratio` | 否 | `16:9`、`9:16` 或 `1:1`。 |
 | `resolution` | 否 | `480p`、`720p`、`1080p` 或 `4k`，取决于所选模型。作为顶层字段传递，不要用 `quality` 代替。 |
 | `image_urls` | 否 | 推荐字段，最多 7 个参考图 URL 或完整 data URL。 |
