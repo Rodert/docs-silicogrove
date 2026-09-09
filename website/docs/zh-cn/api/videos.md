@@ -82,7 +82,7 @@ curl -X POST "https://ai.silicogrove.com/v1/videos" \
 | `prompt` | 是 | 建议描述主体、动作、镜头、视觉风格和构图。 |
 | `seconds` | 否 | 请求时长，字符串，例如 `"6"`、`"8"`、`"10"`、`"15"`；实际限制取决于模型。`grok-video-1.5` 仅支持 `"6"`、`"8"`、`"10"`、`"12"`、`"15"`。 |
 | `aspect_ratio` | 否 | `16:9`、`9:16` 或 `1:1`。 |
-| `resolution` | 否 | `480p`、`720p`、`1080p` 或 `4k`，取决于所选模型。作为顶层字段传递，不要用 `quality` 代替。 |
+| `resolution` | Kling V3 必填 | `480p`、`720p`、`1080p` 或 `4k`，取决于所选模型。作为顶层字段传递，不要用 `quality` 代替。 |
 | `image_urls` | 否 | 推荐字段，最多 7 个参考图 URL 或完整 data URL。 |
 | `images` | 否 | `image_urls` 的兼容别名；不能同时传。 |
 | `image` | 否 | 仅用于 `grok-imagine-video-1.5` 的首帧模式。传单个图片 URL 或完整 data URL；不能与 `reference_images` 同时传。 |

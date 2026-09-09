@@ -82,7 +82,7 @@ Use public HTTPS URLs or complete `data:` URLs such as `data:image/png;base64,..
 | `prompt` | Yes | Describe the subject, motion, camera, visual style, and composition. |
 | `seconds` | No | Requested duration as a string, for example `"6"`, `"8"`, `"10"`, or `"15"`. Model-specific limits apply. `grok-video-1.5` accepts only `"6"`, `"8"`, `"10"`, `"12"`, or `"15"`. |
 | `aspect_ratio` | No | `16:9`, `9:16`, or `1:1`. |
-| `resolution` | No | `480p`, `720p`, `1080p`, or `4k`, subject to the selected model. Send it as a top-level field; do not use `quality` as a replacement. |
+| `resolution` | Required for Kling V3 | `480p`, `720p`, `1080p`, or `4k`, subject to the selected model. Send it as a top-level field; do not use `quality` as a replacement. |
 | `image_urls` | No | Preferred array of up to 7 reference image URLs or complete data URLs. |
 | `images` | No | Compatibility alias for `image_urls`; do not send both. |
 | `image` | No | `grok-imagine-video-1.5` first-frame mode only. A single image URL or complete data URL. Do not combine with `reference_images`. |
