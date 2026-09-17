@@ -12,10 +12,12 @@ class: api-page
 
 | 模型 | 时长 | 分辨率 |
 | --- | --- | --- |
-| `grok-video-1.5` | `6`、`8`、`10`、`12`、`15` 秒 | 以模型实际返回为准 |
+| `grok-video-1.5` | 默认 15 秒；可指定 `6`、`8`、`10`、`12`、`15` 秒 | 可选；建议 `720p` |
+
+`grok-video-1.5` 同时支持文生视频、单参考图和多参考图（最多 7 张）。以下三个实例使用相同的接口，仅需根据是否有参考图调整 `image_urls`。
 
 ::: warning
-`grok-video-1.5` 的 `seconds` 只能传字符串 `"6"`、`"8"`、`"10"`、`"12"` 或 `"15"`。传入 `"4"` 或其他值会返回：`seconds must be one of: 6, 8, 10, 12, 15`。
+不传 `seconds` 时默认生成 15 秒。显式传入时，`seconds` 只能是字符串 `"6"`、`"8"`、`"10"`、`"12"` 或 `"15"`。传入 `"4"` 或其他值会返回：`seconds must be one of: 6, 8, 10, 12, 15`。
 :::
 
 ## 其他支持的可灵 V3 模型
@@ -28,7 +30,11 @@ class: api-page
 
 创建可灵任务时将 `resolution` 作为顶层字段传递。不要使用图像生成的 `quality` 字段表示视频分辨率。实际价格以提交任务时的计算结果为准，不要依赖文档中的固定金额。
 
-## 创建任务
+## Grok Video 1.5 调用实例
+
+所有实例均使用 `POST /v1/videos`、`Authorization: Bearer YOUR_API_KEY` 和 `Content-Type: application/json`。
+
+### 1. 文生视频
 
 ```bash
 curl -X POST "https://ai.silicogrove.com/v1/videos" \
@@ -41,6 +47,35 @@ curl -X POST "https://ai.silicogrove.com/v1/videos" \
     "aspect_ratio": "16:9",
     "resolution": "720p"
   }'
+```
+
+### 2. 单参考图视频
+
+```json
+{
+  "model": "grok-video-1.5",
+  "prompt": "让产品平稳旋转，柔和棚拍光线，干净的商业广告镜头",
+  "seconds": "10",
+  "aspect_ratio": "9:16",
+  "resolution": "720p",
+  "image_urls": ["https://example.com/product.png"]
+}
+```
+
+### 3. 多参考图视频
+
+```json
+{
+  "model": "grok-video-1.5",
+  "prompt": "使用这些参考图制作连贯的产品展示视频，电影感运镜与高级商业灯光",
+  "seconds": "15",
+  "aspect_ratio": "16:9",
+  "resolution": "720p",
+  "image_urls": [
+    "https://example.com/product-front.png",
+    "https://example.com/product-detail.png"
+  ]
+}
 ```
 
 响应会包含公开的 `id` 或 `task_id`。请保存该值；不要使用其他上游响应中的内部任务 ID。
@@ -80,9 +115,9 @@ curl -X POST "https://ai.silicogrove.com/v1/videos" \
 | --- | --- | --- |
 | `model` | 是 | API Key 可调用的视频模型。 |
 | `prompt` | 是 | 建议描述主体、动作、镜头、视觉风格和构图。 |
-| `seconds` | 否 | 请求时长，字符串，例如 `"6"`、`"8"`、`"10"`、`"15"`；实际限制取决于模型。`grok-video-1.5` 仅支持 `"6"`、`"8"`、`"10"`、`"12"`、`"15"`。 |
+| `seconds` | 否 | 请求时长，字符串；不传时 `grok-video-1.5` 默认 15 秒。显式传入仅支持 `"6"`、`"8"`、`"10"`、`"12"`、`"15"`。 |
 | `aspect_ratio` | 否 | `16:9`、`9:16` 或 `1:1`。 |
-| `resolution` | Kling V3 必填 | `480p`、`720p`、`1080p` 或 `4k`，取决于所选模型。作为顶层字段传递，不要用 `quality` 代替。 |
+| `resolution` | Kling V3 必填；Grok 可选 | Grok 建议传 `720p`；Kling 支持 `480p`、`720p`、`1080p` 或 `4k`，取决于所选模型。作为顶层字段传递，不要用 `quality` 代替。 |
 | `image_urls` | 否 | 推荐字段，最多 7 个参考图 URL 或完整 data URL。 |
 | `images` | 否 | `image_urls` 的兼容别名；不能同时传。 |
 | `image` | 否 | 仅用于 `grok-imagine-video-1.5` 的首帧模式。传单个图片 URL 或完整 data URL；不能与 `reference_images` 同时传。 |

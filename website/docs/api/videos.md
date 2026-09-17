@@ -12,10 +12,12 @@ Available models depend on the API key and group. Call `GET /v1/models` before p
 
 | Model | Duration | Resolution |
 | --- | --- | --- |
-| `grok-video-1.5` | `6`, `8`, `10`, `12`, or `15` seconds | Check the model response |
+| `grok-video-1.5` | 15 seconds by default; `6`, `8`, `10`, `12`, or `15` seconds when specified | Optional; `720p` recommended |
+
+`grok-video-1.5` supports text-to-video, a single reference image, and multiple reference images (up to 7). The three examples below use the same endpoint; add `image_urls` when reference images are needed.
 
 ::: warning
-For `grok-video-1.5`, `seconds` must be the string `"6"`, `"8"`, `"10"`, `"12"`, or `"15"`. Sending `"4"` or any other value returns: `seconds must be one of: 6, 8, 10, 12, 15`.
+When `seconds` is omitted, the request generates a 15-second video by default. When specified, `seconds` must be the string `"6"`, `"8"`, `"10"`, `"12"`, or `"15"`. Sending `"4"` or any other value returns: `seconds must be one of: 6, 8, 10, 12, 15`.
 :::
 
 ## Other supported Kling V3 models
@@ -28,7 +30,11 @@ For `grok-video-1.5`, `seconds` must be the string `"6"`, `"8"`, `"10"`, `"12"`,
 
 Send `resolution` as a top-level field in Kling create requests. Do not use the image-generation `quality` field for video resolution. The effective price is determined when the task is submitted, so do not rely on a fixed documented amount.
 
-## Create a task
+## Grok Video 1.5 examples
+
+Every example uses `POST /v1/videos`, `Authorization: Bearer YOUR_API_KEY`, and `Content-Type: application/json`.
+
+### 1. Text to video
 
 ```bash
 curl -X POST "https://ai.silicogrove.com/v1/videos" \
@@ -41,6 +47,35 @@ curl -X POST "https://ai.silicogrove.com/v1/videos" \
     "aspect_ratio": "16:9",
     "resolution": "720p"
   }'
+```
+
+### 2. One reference image
+
+```json
+{
+  "model": "grok-video-1.5",
+  "prompt": "Rotate the product smoothly in soft studio lighting, as a clean premium commercial",
+  "seconds": "10",
+  "aspect_ratio": "9:16",
+  "resolution": "720p",
+  "image_urls": ["https://example.com/product.png"]
+}
+```
+
+### 3. Multiple reference images
+
+```json
+{
+  "model": "grok-video-1.5",
+  "prompt": "Create a coherent product showcase using these references, with cinematic camera movement and premium commercial lighting",
+  "seconds": "15",
+  "aspect_ratio": "16:9",
+  "resolution": "720p",
+  "image_urls": [
+    "https://example.com/product-front.png",
+    "https://example.com/product-detail.png"
+  ]
+}
 ```
 
 The response includes a public `id` or `task_id`. Store that value; do not use an upstream task ID obtained from another API response.
@@ -80,9 +115,9 @@ Use public HTTPS URLs or complete `data:` URLs such as `data:image/png;base64,..
 | --- | --- | --- |
 | `model` | Yes | A video model available to the API key. |
 | `prompt` | Yes | Describe the subject, motion, camera, visual style, and composition. |
-| `seconds` | No | Requested duration as a string, for example `"6"`, `"8"`, `"10"`, or `"15"`. Model-specific limits apply. `grok-video-1.5` accepts only `"6"`, `"8"`, `"10"`, `"12"`, or `"15"`. |
+| `seconds` | No | Requested duration as a string. When omitted, `grok-video-1.5` defaults to 15 seconds. When specified, it accepts only `"6"`, `"8"`, `"10"`, `"12"`, or `"15"`. |
 | `aspect_ratio` | No | `16:9`, `9:16`, or `1:1`. |
-| `resolution` | Required for Kling V3 | `480p`, `720p`, `1080p`, or `4k`, subject to the selected model. Send it as a top-level field; do not use `quality` as a replacement. |
+| `resolution` | Required for Kling V3; optional for Grok | `720p` is recommended for Grok. Kling supports `480p`, `720p`, `1080p`, or `4k`, subject to the selected model. Send it as a top-level field; do not use `quality` as a replacement. |
 | `image_urls` | No | Preferred array of up to 7 reference image URLs or complete data URLs. |
 | `images` | No | Compatibility alias for `image_urls`; do not send both. |
 | `image` | No | `grok-imagine-video-1.5` first-frame mode only. A single image URL or complete data URL. Do not combine with `reference_images`. |
