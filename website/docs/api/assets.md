@@ -4,6 +4,8 @@ class: api-page
 
 # Reference Assets
 
+<p class="api-section-description">Upload local images, videos, or audio as temporary assets for subsequent generation requests.</p>
+
 Upload local images, videos, and audio to the temporary asset endpoint. The returned `data.url` can be placed in a video request's `images`, `videos`, or `audios` array.
 
 ::: warning Temporary files are periodically removed

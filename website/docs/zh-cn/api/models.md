@@ -4,6 +4,8 @@ class: api-page
 
 # 模型与权限
 
+<p class="api-section-description">调用前先查询可用模型，确认当前账号和 API Key 的访问权限。</p>
+
 可调用模型由账号、分组和 API Key 权限共同决定。始终以自己的 `/v1/models` 返回结果为准。
 
 | 场景 | 常见模型示例 | 接口 |

@@ -4,6 +4,8 @@ class: api-page
 
 # 文本聊天
 
+<p class="api-section-description">通过聊天接口发送文本或模型支持的多模态内容，获取模型回复。</p>
+
 ## Chat Completions
 
 ```bash

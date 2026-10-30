@@ -4,6 +4,8 @@ class: api-page
 
 # Relay Integrations
 
+<p class="api-section-description">When connecting through another gateway, configure the upstream address and preserve request fields as described below.</p>
+
 - Use `https://ai.silicogrove.com` or `https://ai.silicogrove.com/v1` as the primary upstream, depending on whether your relay adds `/v1` automatically.
 - The backup upstream is `https://api.silicogrove.com` or `https://api.silicogrove.com/v1`; configure failover in the relay.
 - Synchronize `/v1/models` with a Silico Grove API key rather than entering unavailable models manually.

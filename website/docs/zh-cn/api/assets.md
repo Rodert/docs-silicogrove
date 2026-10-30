@@ -4,6 +4,8 @@ class: api-page
 
 # 上传参考素材
 
+<p class="api-section-description">将本地图片、视频或音频上传为临时素材，供后续生成请求引用。</p>
+
 本地图片、视频和音频可先上传到临时素材接口。该接口接受 API Key（也接受游乐场登录态），因此 API 客户端可先上传本地文件，再将返回的 `data.url` 放入后续请求。
 
 上传成功后的 `data.url` 可直接放入视频请求中的 `images`、`videos` 或 `audios` 数组；也可用于[异步图片改图](/zh-cn/api/#image-tasks)的 `images[].image_url`。

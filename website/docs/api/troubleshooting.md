@@ -4,6 +4,8 @@ class: api-page
 
 # Troubleshooting
 
+<p class="api-section-description">When a request fails, use its error symptoms to find the cause and corrective action.</p>
+
 | Symptom | Likely cause | Resolution |
 | --- | --- | --- |
 | Model unavailable | The model and group do not match, or the key lacks permission. | Call `/v1/models` with the same key to confirm the model name. |

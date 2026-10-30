@@ -4,6 +4,8 @@ class: api-page
 
 # 视频生成
 
+<p class="api-section-description">视频生成需要时间，通过提交任务、轮询状态的方式获取最终视频。</p>
+
 视频生成是异步任务。通过 `POST /v1/videos` 创建任务，保存返回的任务 ID，再轮询 `GET /v1/videos/{task_id}` 直到任务结束。视频模型不能发送到 `/v1/chat/completions`。
 
 可调用模型取决于 API Key 和用户分组。向最终用户展示模型前，请先调用 `GET /v1/models`。

@@ -4,6 +4,8 @@ class: api-page
 
 # 音频
 
+<p class="api-section-description">通过音频接口将文字转换为语音，或将录音转写为文字。</p>
+
 ## 语音合成
 
 ```bash

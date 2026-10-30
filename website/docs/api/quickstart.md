@@ -4,6 +4,8 @@ class: api-page
 
 # Quick Start
 
+<p class="api-section-description">Follow the steps from creating an API key to making your first request.</p>
+
 1. Create and securely store an API key in the console.
 2. List the models available to that key.
 3. Send requests to the matching capability endpoint.

@@ -4,6 +4,8 @@ class: api-page
 
 # Models and Access
 
+<p class="api-section-description">Check available models before calling an API to confirm access for your account and key.</p>
+
 Available models depend on your account, group, and API key permissions. Treat `GET /v1/models` as the source of truth.
 
 | Capability | Typical models | Endpoint |

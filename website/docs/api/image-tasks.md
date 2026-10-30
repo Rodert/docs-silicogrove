@@ -4,6 +4,8 @@ class: api-page
 
 # Async Image Generation and Editing (Recommended)
 
+<p class="api-section-description">Image generation time varies, so asynchronous tasks suit API integrations: submit first, then query for the result.</p>
+
 Use asynchronous tasks to generate and edit images. Submit a task, receive its ID, then query for the result without holding a synchronous request open.
 
 | Goal | Complete workflow |
@@ -11,63 +13,68 @@ Use asynchronous tasks to generate and edit images. Submit a task, receive its I
 | Edit a local image | Upload reference → Submit task → Poll task |
 | Generate from text | Submit task → Poll task |
 
-Run the commands in the same terminal. Replace `YOUR_API_KEY` with your key and the reference path with a local image file.
-
-```bash
-API_KEY='YOUR_API_KEY'
-```
+Each code block is an independent curl command. Replace its placeholders and paste it directly into a terminal; no variable setup is needed. Replace `YOUR_API_KEY` in every command with your API key.
 
 ## Editing: Upload reference → Submit task → Poll task
 
-### Step 1: Upload a local reference image
+### Step 1: Upload two local reference images separately
 
-Replace `/path/to/reference.jpg` with the path to an image on your computer.
+Use the first image for the subject and the second for the background. Replace each file path with a real file on your computer.
+
+Upload the subject image:
 
 ```bash
-curl --fail-with-body --silent --show-error \
+curl --request POST \
   'https://ai.silicogrove.com/pg/assets' \
-  -H "Authorization: Bearer $API_KEY" \
-  -F 'kind=image' \
-  -F 'file=@/path/to/reference.jpg'
+  --header 'Authorization: Bearer YOUR_API_KEY' \
+  --form 'kind=image' \
+  --form 'file=@/path/to/subject.jpg'
 ```
 
-Copy `data.url` from the successful response into `IMAGE_URL` below. If uploading fails, resolve the error before continuing.
+Upload the background image:
+
+```bash
+curl --request POST \
+  'https://ai.silicogrove.com/pg/assets' \
+  --header 'Authorization: Bearer YOUR_API_KEY' \
+  --form 'kind=image' \
+  --form 'file=@/path/to/background.jpg'
+```
+
+Each upload returns its own `data.url`. Replace `YOUR_SUBJECT_IMAGE_URL` in the JSON below with the subject upload URL and `YOUR_BACKGROUND_IMAGE_URL` with the background upload URL. If either upload fails, resolve the error before submitting.
 
 ### Step 2: Submit the editing task
 
 ```bash
-IMAGE_URL='PASTE_DATA_URL_FROM_STEP_1'
-
-curl --fail-with-body --silent --show-error \
+curl --request POST \
   'https://ai.silicogrove.com/v1/images/tasks' \
-  -H "Authorization: Bearer $API_KEY" \
-  -H 'Content-Type: application/json' \
-  --data-binary @- <<JSON
-{
+  --header 'Authorization: Bearer YOUR_API_KEY' \
+  --header 'Content-Type: application/json' \
+  --data-raw '{
   "model": "gpt-image-2",
-  "prompt": "Keep the subject and change the background to light gray",
-  "images": [{"image_url": "$IMAGE_URL"}],
+  "prompt": "Keep the subject from the first reference image and place it naturally into the background from the second reference image, matching lighting, perspective, and shadows",
+  "images": [
+    {"image_url": "YOUR_SUBJECT_IMAGE_URL"},
+    {"image_url": "YOUR_BACKGROUND_IMAGE_URL"}
+  ],
   "size": "1024x1024",
   "quality": "high",
   "n": 1
-}
-JSON
+}'
 ```
 
 A successful submission returns HTTP `202`. Copy its `id`. This means the task was accepted; the image is not ready yet.
 
-For multiple references, upload each local file using Step 1, then add each returned `data.url` to `images` in order as an `{"image_url": "RETURNED_DATA_URL"}` object. Up to `10` references are supported.
+The first `images` item is the subject and the second is the background, matching the prompt. `n: 1` requests one output image; it does not limit the reference count to one. For a single reference, upload one file and keep only the first array item. Upload and append further references the same way, up to `10`.
 
 ### Step 3: Poll the editing task
 
-Set `TASK_ID` to the `id` returned by Step 2 and query:
+Replace `YOUR_TASK_ID` in the URL with the complete `id` returned by Step 2:
 
 ```bash
-TASK_ID='TASK_ID_FROM_SUBMISSION'
-
-curl --fail-with-body --silent --show-error \
-  "https://ai.silicogrove.com/v1/images/tasks/$TASK_ID" \
-  -H "Authorization: Bearer $API_KEY"
+curl --request GET \
+  'https://ai.silicogrove.com/v1/images/tasks/YOUR_TASK_ID' \
+  --header 'Authorization: Bearer YOUR_API_KEY'
 ```
 
 Repeat the query every `2` to `5` seconds. Keep waiting for `queued` / `processing`; stop on `completed` and download the images from `data[].url`, or stop on `failed` and read `error.message`. On an HTTP error, inspect the response instead of automatically resubmitting a generation task.
@@ -79,11 +86,11 @@ Repeat the query every `2` to `5` seconds. Keep waiting for `queued` / `processi
 Send the prompt and generation parameters. **Omit `images`; do not send `images: []`, `image`, or `mask`.**
 
 ```bash
-curl --fail-with-body --silent --show-error \
+curl --request POST \
   'https://ai.silicogrove.com/v1/images/tasks' \
-  -H "Authorization: Bearer $API_KEY" \
-  -H 'Content-Type: application/json' \
-  --data-binary '{
+  --header 'Authorization: Bearer YOUR_API_KEY' \
+  --header 'Content-Type: application/json' \
+  --data-raw '{
     "model": "gpt-image-2",
     "prompt": "A cat sitting by a window, realistic photography",
     "size": "1024x1024",
@@ -94,17 +101,66 @@ curl --fail-with-body --silent --show-error \
 
 ### Step 2: Poll the generation task
 
-Set `TASK_ID` to the `id` returned by this submission:
+Replace `YOUR_TASK_ID` in the URL with the complete `id` returned by this submission:
 
 ```bash
-TASK_ID='TASK_ID_FROM_SUBMISSION'
-
-curl --fail-with-body --silent --show-error \
-  "https://ai.silicogrove.com/v1/images/tasks/$TASK_ID" \
-  -H "Authorization: Bearer $API_KEY"
+curl --request GET \
+  'https://ai.silicogrove.com/v1/images/tasks/YOUR_TASK_ID' \
+  --header 'Authorization: Bearer YOUR_API_KEY'
 ```
 
 Repeat the query every `2` to `5` seconds. Keep waiting for `queued` / `processing`; stop on `completed` and download the images from `data[].url`, or stop on `failed` and read `error.message`. On an HTTP error, inspect the response instead of automatically resubmitting a generation task.
+
+## Request parameters
+
+### Common headers
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| `Authorization` | string | Yes | `Bearer YOUR_API_KEY`. Required for upload, submission, and retrieval. Only the task owner can retrieve the task. |
+| `Content-Type` | string | For JSON submission | Use `application/json` to submit JSON. For uploads, let curl `-F` generate `multipart/form-data` and its boundary. GET retrieval needs no Content-Type header. |
+
+### Upload reference: `POST /pg/assets`
+
+Use a multipart form. Upload one image per request; upload multiple references separately.
+
+| Parameter | Type | Required | Values or limits | Description |
+| --- | --- | --- | --- | --- |
+| `kind` | string | Yes | `image` | Identifies the upload as an image reference. |
+| `file` | file | Yes | JPEG, PNG, WebP; nonempty, up to `10 MiB` | A local image file. Use curl `--form 'file=@/local/path/image.jpg'`, then read `data.url` from the successful response. |
+
+### Submit task: `POST /v1/images/tasks`
+
+These parameters apply to the JSON workflows above. Supported sizes, quality levels, and advanced options vary by model; do not send every optional parameter by default.
+
+| Parameter | Type | Required | Values or limits | Description |
+| --- | --- | --- | --- | --- |
+| `model` | string | Yes | Available via `GET /v1/models` | The image model, such as `gpt-image-2`. |
+| `prompt` | string | Yes | Nonempty text | Generation or editing instructions. For multiple images, describe the role of each reference in array order. |
+| `images` | object[] | For editing | `1` to `10` items | Reference images. Omit this field entirely for text-to-image; do not send an empty array. Reference count is independent of output count `n`. |
+| `images[].image_url` | string | In every item | Use the upload response's `data.url` | Reference image URL. Each object must contain only this field. The API also accepts a complete image data URL; this workflow consistently uploads local files first. |
+| `n` | integer | No | Defaults to `1`; explicitly send `1` to `10` | Requested output image count. Use `1` for Gemini image models; other models may impose a smaller limit. |
+| `size` | string | No | For example `1024x1024`, `1536x1024`, `1024x1536` | Output size. Supported values and omission behavior depend on the model. Examples explicitly use `1024x1024`. |
+| `quality` | string | No | For example `auto`, `low`, `medium`, `high`; Gemini supports `1k`, `2k`, `4k` | Output quality or resolution tier, depending on the model. Examples use `high`; models do not necessarily support the same values. |
+| `stream` | boolean | No | Omit or use `false` | Retrieve async results by polling; `true` is unsupported. |
+| `response_format` | string | No | Omit for these workflows | May affect the upstream response, but async tasks always return stored `data[].url` values, not base64 output. |
+| `background` | string | No | Commonly `auto`, `opaque`, `transparent` | Background mode, supported only by some models. |
+| `output_format` | string | No | Commonly `png`, `jpeg`, `webp` | Output image format, supported only by some models. |
+| `output_compression` | integer | No | Usually `0` to `100` | JPEG/WebP compression quality, supported only by some models. |
+| `style` | string | No | Commonly `vivid`, `natural` | Image style, supported only by some models. |
+| `moderation` | string | No | Commonly `auto`, `low` | Moderation strength, supported only by some models. |
+| `input_fidelity` | string | No | Commonly `low`, `high` | Editing reference fidelity, supported only by some models. |
+| `mask` | string | No | A mask reference supported by the model | Specifies the editing area and requires reference images. Not needed for this two-image example. Unsupported for Gemini edits. |
+
+`YOUR_API_KEY`, `YOUR_SUBJECT_IMAGE_URL`, `YOUR_BACKGROUND_IMAGE_URL`, and `YOUR_TASK_ID` are placeholders to replace. Image URLs must come from Step 1 upload responses; task IDs must come from submission responses. Do not pass local file paths as `images[].image_url`.
+
+### Poll task: `GET /v1/images/tasks/{task_id}`
+
+| Parameter | Location | Type | Required | Description |
+| --- | --- | --- | --- | --- |
+| `task_id` | URL path | string | Yes | The `id` returned by submission, such as `task_0123456789abcdef`. Send no request body. Use the actual ID returned for this task. |
+
+Query every `2` to `5` seconds and stop on `completed` or `failed`. See “Task response reference” below for status, output, and error fields.
 
 ## Parameters and limits
 

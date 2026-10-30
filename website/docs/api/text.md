@@ -4,6 +4,8 @@ class: api-page
 
 # Text
 
+<p class="api-section-description">Send text or supported multimodal content through the chat API to receive model responses.</p>
+
 ## Chat Completions
 
 ```bash

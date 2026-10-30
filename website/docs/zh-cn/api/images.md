@@ -4,6 +4,8 @@ class: api-page
 
 # 同步图片生成与编辑
 
+<p class="api-section-description">同步接口在同一次请求中等待并返回图片，适用于需要同步响应的客户端。</p>
+
 推荐使用[异步图片任务](/zh-cn/api/#image-tasks)：改图按“上传 → 提交 → 轮询”，生图按“提交 → 轮询”。本节介绍同步接口及 Gemini 原生协议。
 
 实际可用模型以 API Key 请求 `GET /v1/models` 的结果为准：

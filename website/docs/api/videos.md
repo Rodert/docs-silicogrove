@@ -4,6 +4,8 @@ class: api-page
 
 # Video
 
+<p class="api-section-description">Video generation takes time; submit a task and poll its status to retrieve the finished video.</p>
+
 Video generation is asynchronous. Submit to `POST /v1/videos`, retain the returned task ID, then poll `GET /v1/videos/{task_id}` until the task reaches a terminal state. Video models must not be sent to `/v1/chat/completions`.
 
 Available models depend on the API key and group. Call `GET /v1/models` before presenting model choices to end users.

@@ -4,6 +4,8 @@ class: api-page
 
 # 二次中转注意事项
 
+<p class="api-section-description">将本站接入其他中转系统时，按以下要求配置地址并保留请求字段。</p>
+
 - 首选上游地址填写 `https://ai.silicogrove.com` 或 `https://ai.silicogrove.com/v1`，取决于中转系统是否自动补全 `/v1`。
 - 备用地址为 `https://api.silicogrove.com` 或 `https://api.silicogrove.com/v1`；需要由中转系统配置故障切换，不会自动生效。
 - 使用 Silico Grove 的 API Key 同步 `/v1/models`，不要手填不存在的模型。

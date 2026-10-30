@@ -4,6 +4,8 @@ class: api-page
 
 # Synchronous Image Generation and Editing
 
+<p class="api-section-description">Synchronous endpoints wait for images within a single request, for clients that need a synchronous response.</p>
+
 Start with [async image tasks](/api/#image-tasks): upload → submit → poll for editing, or submit → poll for text-to-image. This section covers synchronous endpoints and the native Gemini protocol.
 
 List models with your API key before use; its `GET /v1/models` response is the source of truth.

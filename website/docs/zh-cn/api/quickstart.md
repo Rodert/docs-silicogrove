@@ -4,6 +4,8 @@ class: api-page
 
 # 快速接入
 
+<p class="api-section-description">从创建 API Key 到发起第一次请求，按步骤完成接入。</p>
+
 1. 在控制台创建并妥善保存 API Key。
 2. 用该 Key 查询可用模型，确认权限。
 3. 为不同能力调用对应接口，视频和图片接口不可混用。

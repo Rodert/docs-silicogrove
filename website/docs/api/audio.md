@@ -4,6 +4,8 @@ class: api-page
 
 # Audio
 
+<p class="api-section-description">Use the audio APIs to turn text into speech or transcribe recordings into text.</p>
+
 ## Speech synthesis
 
 ```bash

@@ -4,6 +4,8 @@ class: api-page
 
 # 常见错误
 
+<p class="api-section-description">遇到调用失败时，按错误现象查找原因和处理方式。</p>
+
 | 现象 | 常见原因 | 处理方式 |
 | --- | --- | --- |
 | 模型不可用 | 模型和分组不匹配，或 Key 没有权限。 | 用同一个 Key 请求 `/v1/models` 确认模型名。 |
