@@ -37,9 +37,15 @@ Start with [Quick start](#quickstart), then confirm access in [Models and access
 
 <!--@include: ./text.md{7,}-->
 
+<div id="image-tasks"></div>
+
+## Async Image Generation and Editing (Recommended)
+
+<!--@include: ./image-tasks.md{7,}-->
+
 <div id="images"></div>
 
-## Images
+## Synchronous Images
 
 <!--@include: ./images.md{7,}-->
 

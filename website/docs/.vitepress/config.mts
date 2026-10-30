@@ -1,7 +1,7 @@
 import { defineConfig } from 'vitepress'
 
 const siteUrl = 'https://docs.silicogrove.com'
-const apiSourcePages = /^(api|zh-cn\/api)\/(quickstart|models|text|images|videos|assets|audio|troubleshooting|relay)\.md$/
+const apiSourcePages = /^(api|zh-cn\/api)\/(quickstart|models|text|image-tasks|images|videos|assets|audio|troubleshooting|relay)\.md$/
 
 function pageUrl(relativePath: string) {
   const path = relativePath
@@ -30,7 +30,8 @@ const englishApiSidebar = [
     text: 'API capabilities',
     items: [
       { text: 'Text', link: '/api/#text' },
-      { text: 'Images', link: '/api/#images' },
+      { text: 'Async images (recommended)', link: '/api/#image-tasks' },
+      { text: 'Synchronous images', link: '/api/#images' },
       { text: 'Video', link: '/api/#videos' },
       { text: 'Reference assets', link: '/api/#assets' },
       { text: 'Audio', link: '/api/#audio' }
@@ -58,7 +59,8 @@ const chineseApiSidebar = [
     text: '能力接口',
     items: [
       { text: '文本聊天', link: '/zh-cn/api/#text' },
-      { text: '图片生成与编辑', link: '/zh-cn/api/#images' },
+      { text: '异步图片生成与编辑（推荐）', link: '/zh-cn/api/#image-tasks' },
+      { text: '同步图片生成与编辑', link: '/zh-cn/api/#images' },
       { text: '视频生成', link: '/zh-cn/api/#videos' },
       { text: '上传参考素材', link: '/zh-cn/api/#assets' },
       { text: '音频', link: '/zh-cn/api/#audio' }

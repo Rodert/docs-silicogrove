@@ -47,9 +47,15 @@ outline: false
 
 <!--@include: ./text.md{7,}-->
 
+<div id="image-tasks"></div>
+
+## 异步图片生成与编辑（推荐）
+
+<!--@include: ./image-tasks.md{7,}-->
+
 <div id="images"></div>
 
-## 图片生成与编辑
+## 同步图片生成与编辑
 
 <!--@include: ./images.md{7,}-->
 

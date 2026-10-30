@@ -2,7 +2,9 @@
 class: api-page
 ---
 
-# Images
+# Synchronous Image Generation and Editing
+
+Start with [async image tasks](/api/#image-tasks): upload → submit → poll for editing, or submit → poll for text-to-image. This section covers synchronous endpoints and the native Gemini protocol.
 
 List models with your API key before use; its `GET /v1/models` response is the source of truth.
 
@@ -128,169 +130,6 @@ If R2 is not configured or upload fails, the response contains `b64_json` instea
 Images returned through `file.lunadownload.com` are temporary and periodically removed. Download and store generated files promptly.
 :::
 
-## Asynchronous image tasks
-
-Use the asynchronous API when generation may exceed client or reverse-proxy timeouts. Submission immediately returns a task ID; a background worker calls the provider and persists the result to R2. Existing synchronous endpoints remain unchanged.
-
-| Operation | Endpoint | Request format |
-| --- | --- | --- |
-| Async generation | `POST /v1/images/tasks` | JSON without `image`, `images`, or `mask` |
-| Async editing | `POST /v1/images/tasks` | Multipart file upload, or JSON containing image fields |
-| Retrieve task | `GET /v1/images/tasks/{task_id}` | GET |
-
-R2 storage must be enabled for async tasks, and `stream: true` is unsupported. Multipart reference images are limited to `10 MB` each. A task becomes `completed` only after its output is persisted to R2. Provider or storage failures mark it `failed` and refund the pre-consumed quota.
-
-JSON edits accept only an `images` object array, with at most `10` entries in preserved order. Every item must contain only `image_url`, whose value must be a public HTTPS URL or a complete `data:image/...;base64,...` URL. A decoded data URL is limited to `10 MB` per image and its media type must match its content. A standalone `image` field, string arrays, and additional object fields are rejected. Gemini image models convert these references to native `inlineData`. `mask` is unsupported for Gemini edits. To use a local file in JSON, first upload it through the [temporary asset API](/api/assets) and use the returned `data.url`.
-
-### Async generation
-
-```bash
-curl -X POST "https://ai.silicogrove.com/v1/images/tasks" \
-  -H "Authorization: Bearer YOUR_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "model": "gpt-image-2",
-    "prompt": "A premium product poster in a realistic photography style",
-    "size": "1024x1024",
-    "quality": "high",
-    "n": 1
-  }'
-```
-
-### Async editing
-
-```bash
-curl -X POST "https://ai.silicogrove.com/v1/images/tasks" \
-  -H "Authorization: Bearer YOUR_API_KEY" \
-  -F "model=gpt-image-2" \
-  -F "prompt=Keep the subject and change the background to a city at night" \
-  -F "image=@/path/to/input.png" \
-  -F "size=1024x1024" \
-  -F "quality=high" \
-  -F "n=1"
-```
-
-You can also upload local references first and submit their returned `data.url` values as JSON. This example sends two reference images:
-
-```bash
-curl -X POST "https://ai.silicogrove.com/v1/images/tasks" \
-  -H "Authorization: Bearer YOUR_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "model": "gpt-image-2",
-    "prompt": "Keep the subject and change the background to a city at night",
-    "images": [
-      {"image_url": "https://example.com/subject.png"},
-      {"image_url": "https://example.com/style.png"}
-    ],
-    "size": "1024x1024",
-    "quality": "high",
-    "n": 1
-  }'
-```
-
-### Submission response
-
-A successful submission returns HTTP `202 Accepted`:
-
-```json
-{
-  "id": "task_0123456789abcdef",
-  "object": "image.task",
-  "status": "queued",
-  "progress": "0%",
-  "created_at": 1786192453,
-  "started_at": 0,
-  "completed_at": 0
-}
-```
-
-### Retrieve and poll
-
-```bash
-curl "https://ai.silicogrove.com/v1/images/tasks/task_0123456789abcdef" \
-  -H "Authorization: Bearer YOUR_API_KEY"
-```
-
-Only the user who created a task can retrieve it. Poll every `2` to `5` seconds; avoid high-frequency concurrent polling.
-
-| Field | Type | Present when | Description |
-| --- | --- | --- | --- |
-| `id` | string | Always | Public task ID in `task_...` format. |
-| `object` | string | Always | Always `image.task`. |
-| `status` | string | Always | `queued`, `processing`, `completed`, or `failed`. |
-| `progress` | string | Always | Percentage string such as `0%`, `10%`, or `100%`. |
-| `created_at` | integer | Always | Task submission Unix timestamp. |
-| `started_at` | integer | Always | Execution start Unix timestamp, or `0` before execution. |
-| `completed_at` | integer | Always | Terminal Unix timestamp, or `0` before completion. |
-| `created` | integer | Success | Creation timestamp from the image result. |
-| `data` | array | Success | Image results; read the output from `data[].url`. |
-| `error.message` | string | Failure | Task failure reason. |
-| `error.type` | string | Failure | Currently `image_task_failed`. |
-
-| `status` | Meaning | Terminal |
-| --- | --- | --- |
-| `queued` | Waiting for a worker | No |
-| `processing` | Calling the provider or storing output | No |
-| `completed` | Finished; `data[].url` is available | Yes |
-| `failed` | Failed; inspect `error` | Yes |
-
-Completed response:
-
-```json
-{
-  "id": "task_0123456789abcdef",
-  "object": "image.task",
-  "status": "completed",
-  "progress": "100%",
-  "created_at": 1786192453,
-  "started_at": 1786192455,
-  "completed_at": 1786192550,
-  "created": 1786192548,
-  "data": [{"url": "https://file.lunadownload.com/temporary/2026/08/12/uuid.png"}]
-}
-```
-
-Failed response:
-
-```json
-{
-  "id": "task_0123456789abcdef",
-  "object": "image.task",
-  "status": "failed",
-  "progress": "100%",
-  "created_at": 1786192453,
-  "started_at": 1786192455,
-  "completed_at": 1786192550,
-  "error": {"message": "upstream request failed", "type": "image_task_failed"}
-}
-```
-
-### Async HTTP status codes
-
-| Status | Scenario |
-| --- | --- |
-| `202` | Task created. |
-| `400` | Invalid parameters, multipart file, `n`, or `stream`. |
-| `403` | API key, quota, group, or model access denied. |
-| `404` | Task is absent, has a different type, or belongs to another user. |
-| `429` | Request or model concurrency limit reached. |
-| `503` | R2 storage required by async tasks is not configured or available. |
-
-Submission or retrieval failures that occur before a task response use this error envelope:
-
-```json
-{
-  "error": {
-    "message": "R2 storage is required for asynchronous image tasks",
-    "type": "storage_unavailable",
-    "code": "storage_unavailable"
-  }
-}
-```
-
-There is currently no `/v1/images/tasks/{task_id}/content` endpoint. Download `data[].url` from the completed response directly.
-
 ## Native Gemini generation
 
 This interface is only for Gemini image models. `gpt-image-2` does not support it.
@@ -348,13 +187,11 @@ Gemini image models currently generate one image per request: set `n` to `1`.
 
 ## Recommended integration
 
-Use the OpenAI-compatible endpoints for standard clients and relay integrations:
+Prefer [async image tasks](/api/#image-tasks). For clients requiring synchronous responses, use these OpenAI-compatible endpoints:
 
 ```text
 POST /v1/images/generations
 POST /v1/images/edits
-POST /v1/images/tasks
-GET /v1/images/tasks/{task_id}
 ```
 
 Use `POST /v1beta/models/{model}:generateContent` only when you need the complete Gemini request format, multimodal `contents`, or the Gemini SDK.
