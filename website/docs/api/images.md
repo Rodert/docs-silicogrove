@@ -75,7 +75,7 @@ curl "https://ai.silicogrove.com/v1/images/edits" \
 
 For Gemini, change `model` to `gemini-3.1-flash-image` and use `quality=2k`.
 
-Supported input formats are PNG, JPG, JPEG, and WebP. The playground currently accepts one reference image per request, up to 10 MB.
+Supported input formats are PNG, JPG, JPEG, and WebP. The playground currently accepts up to `3` reference images per request, up to `10 MB` each.
 
 ## OpenAI image parameters
 
@@ -95,7 +95,8 @@ The gateway accepts the common fields below. Individual models may support only 
 | `style` | string | No | Common: `vivid`, `natural` | Style option; model-dependent. |
 | `moderation` | string | No | Common: `auto`, `low` | Moderation level; model-dependent. |
 | `stream` | boolean | No | `true`, `false` | Requests a streamed synchronous response. Async tasks require `false` or omission. |
-| `image`, `image[]` | file or model-supported JSON URL/value | For editing | PNG, JPEG, WebP; multipart file limit `10 MB` | Reference image. Async multipart files are persisted before worker execution. |
+| `image`, `image[]` | file | For multipart editing | PNG, JPEG, WebP; async tasks allow at most `10` images, with a per-file limit of `10 MB` | Reference image. Use `image[]` for multiple images. Async multipart files are persisted before worker execution. |
+| `images` | object array | For async JSON editing | At most `10` items | Every item must contain only `image_url`. |
 | `mask` | file or model-supported JSON URL/value | No | Usually PNG | Edit mask; model-dependent. |
 | `input_fidelity` | string | No | Common: `low`, `high` | Reference-image fidelity; model-dependent. |
 
@@ -139,6 +140,8 @@ Use the asynchronous API when generation may exceed client or reverse-proxy time
 
 R2 storage must be enabled for async tasks, and `stream: true` is unsupported. Multipart reference images are limited to `10 MB` each. A task becomes `completed` only after its output is persisted to R2. Provider or storage failures mark it `failed` and refund the pre-consumed quota.
 
+JSON edits accept only an `images` object array, with at most `10` entries in preserved order. Every item must contain only `image_url`, whose value must be a public HTTPS URL or a complete `data:image/...;base64,...` URL. A decoded data URL is limited to `10 MB` per image and its media type must match its content. A standalone `image` field, string arrays, and additional object fields are rejected. Gemini image models convert these references to native `inlineData`. `mask` is unsupported for Gemini edits. To use a local file in JSON, first upload it through the [temporary asset API](/api/assets) and use the returned `data.url`.
+
 ### Async generation
 
 ```bash
@@ -165,6 +168,25 @@ curl -X POST "https://ai.silicogrove.com/v1/images/tasks" \
   -F "size=1024x1024" \
   -F "quality=high" \
   -F "n=1"
+```
+
+You can also upload local references first and submit their returned `data.url` values as JSON. This example sends two reference images:
+
+```bash
+curl -X POST "https://ai.silicogrove.com/v1/images/tasks" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "gpt-image-2",
+    "prompt": "Keep the subject and change the background to a city at night",
+    "images": [
+      {"image_url": "https://example.com/subject.png"},
+      {"image_url": "https://example.com/style.png"}
+    ],
+    "size": "1024x1024",
+    "quality": "high",
+    "n": 1
+  }'
 ```
 
 ### Submission response

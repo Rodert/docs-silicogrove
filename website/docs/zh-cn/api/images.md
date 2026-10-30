@@ -75,7 +75,7 @@ curl "https://ai.silicogrove.com/v1/images/edits" \
 
 调用 Gemini 改图时将 `model` 改为 `gemini-3.1-flash-image`，并使用 `quality=2k`。
 
-支持 PNG、JPG、JPEG、WebP。游乐场当前每次仅允许上传一张参考图，单文件最大 `10 MB`。
+支持 PNG、JPG、JPEG、WebP。游乐场当前每次最多上传 `3` 张参考图，单文件最大 `10 MB`。
 
 ## OpenAI 图片参数
 
@@ -95,7 +95,8 @@ curl "https://ai.silicogrove.com/v1/images/edits" \
 | `style` | string | 否 | 常见 `vivid`、`natural` | 风格选项，仅部分模型支持。 |
 | `moderation` | string | 否 | 常见 `auto`、`low` | 内容审核强度，仅部分模型支持。 |
 | `stream` | boolean | 否 | `true`、`false` | 同步接口是否请求流式返回；异步任务必须为 `false` 或省略。 |
-| `image`、`image[]` | file 或模型支持的 JSON URL/值 | 改图时是 | PNG、JPEG、WebP；multipart 单文件最大 `10 MB` | 参考图。异步 multipart 文件会先保存再由 worker 发送。 |
+| `image`、`image[]` | file | multipart 改图时是 | PNG、JPEG、WebP；异步任务最多 `10` 张，单文件最大 `10 MB` | 参考图。多图使用 `image[]`；异步 multipart 文件会先保存再由 worker 发送。 |
+| `images` | object array | 异步 JSON 改图时是 | 最多 `10` 项 | 每项必须且只能包含 `image_url`。 |
 | `mask` | file 或模型支持的 JSON URL/值 | 否 | 通常为 PNG | 编辑遮罩，仅部分模型支持。 |
 | `input_fidelity` | string | 否 | 常见 `low`、`high` | 参考图保真度，仅部分模型支持。 |
 
@@ -139,7 +140,7 @@ R2 未配置或上传失败时返回 `b64_json`：
 
 异步接口必须启用本站 R2 存储，不支持 `stream: true`。异步改图上传的参考图单文件最大 `10 MB`。异步生成结果必须成功保存到 R2 才会标记为 `completed`；上游调用或持久化失败时任务标记为 `failed`，预扣额度会退还。
 
-JSON 改图使用 `image`（单张）或 `images`（多张），每项为公网 HTTPS URL 或完整 `data:image/...;base64,...`。Gemini 图片模型会将这些引用转换为原生 `inlineData`；`mask` 不适用于 Gemini 改图。需要上传本地文件时，可先调用[临时素材接口](/zh-cn/api/assets)，该接口支持 API Key。
+JSON 改图只接受 `images` 对象数组，最多 `10` 张并保持数组顺序。每项必须且只能包含 `image_url`，其值为公网 HTTPS URL 或完整的 `data:image/...;base64,...`；data URL 单张解码后最大 `10 MB`，且媒体类型必须与内容一致。不接受单独的 `image` 字段、字符串数组或额外对象字段。Gemini 图片模型会将这些引用转换为原生 `inlineData`；`mask` 不适用于 Gemini 改图。需要上传本地文件时，可先调用[临时素材接口](/zh-cn/api/assets)，该接口支持 API Key。
 
 ### 异步生图
 
@@ -167,6 +168,25 @@ curl -X POST "https://ai.silicogrove.com/v1/images/tasks" \
   -F "size=1024x1024" \
   -F "quality=high" \
   -F "n=1"
+```
+
+也可以先上传本地参考图，再使用返回的 `data.url` 提交 JSON。下面示例同时传入两张参考图：
+
+```bash
+curl -X POST "https://ai.silicogrove.com/v1/images/tasks" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "gpt-image-2",
+    "prompt": "保持主体不变，把背景换成夜晚城市",
+    "images": [
+      {"image_url": "https://example.com/subject.png"},
+      {"image_url": "https://example.com/style.png"}
+    ],
+    "size": "1024x1024",
+    "quality": "high",
+    "n": 1
+  }'
 ```
 
 ### 提交响应
